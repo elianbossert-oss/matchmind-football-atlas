@@ -94,9 +94,8 @@ function AnalysePage() {
     () => [...new Set(actions.filter((a) => scopeOf(a.nodeId) === "collectif").map((a) => a.actor))],
     [actions],
   );
-  const lastPeriod: Period = actions.length
-    ? [...actions].sort((a, b) => b.createdAt - a.createdAt)[0].period
-    : "1MT";
+  const lastPeriod: Period =
+    [...actions].sort((a, b) => b.createdAt - a.createdAt)[0]?.period ?? "1MT";
 
   // Défilement vers un nœud retrouvé par la recherche, une fois la branche dépliée.
   useEffect(() => {
@@ -153,7 +152,8 @@ function AnalysePage() {
     if (!filtered.length) return;
     const i = filtered.findIndex((a) => a.id === activeId);
     const next = i === -1 ? (dir === 1 ? 0 : filtered.length - 1) : i + dir;
-    if (next >= 0 && next < filtered.length) play(filtered[next]);
+    const target = filtered[next];
+    if (target) play(target);
   };
 
   const currentTime = () => videoRef.current?.currentTime ?? null;

@@ -27,7 +27,7 @@ export interface CodedAction {
   /** Position dans la vidéo, en secondes. */
   videoTime: number;
   comment: string;
-  thumbnail?: string;
+  thumbnail?: string | undefined;
   createdAt: number;
 }
 

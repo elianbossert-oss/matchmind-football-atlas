@@ -50,7 +50,7 @@ export function StaffSettings({ open, onOpenChange, config, onSave }: Props) {
   }, [open, config]);
 
   const evalOf = (id: string): Evaluation =>
-    Object.hasOwn(draft.evaluations, id) ? draft.evaluations[id] : (getNode(id)?.evaluation ?? {});
+    Object.hasOwn(draft.evaluations, id) ? (draft.evaluations[id] ?? {}) : (getNode(id)?.evaluation ?? {});
 
   const setEval = (id: string, key: keyof Evaluation, value: string) =>
     setDraft((d) => ({ ...d, evaluations: { ...d.evaluations, [id]: { ...evalOf(id), [key]: value } } }));

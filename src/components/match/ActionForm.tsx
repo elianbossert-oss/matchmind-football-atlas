@@ -43,8 +43,8 @@ import {
 } from "@/lib/match/logic";
 
 export interface ActionDraft {
-  action?: CodedAction;
-  nodeId?: string;
+  action?: CodedAction | undefined;
+  nodeId?: string | undefined;
   videoTime: number;
 }
 
@@ -57,7 +57,7 @@ interface Props {
   actorsCollective: string[];
   lastPeriod: Period;
   getCurrentTime: () => number | null;
-  onSave: (a: Omit<CodedAction, "id" | "createdAt" | "thumbnail"> & { id?: string }) => void;
+  onSave: (a: Omit<CodedAction, "id" | "createdAt" | "thumbnail"> & { id?: string | undefined }) => void;
 }
 
 const NONE = "__none";

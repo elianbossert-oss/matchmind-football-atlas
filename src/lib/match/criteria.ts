@@ -8,9 +8,9 @@ export type ThresholdKey = "hi1" | "hi2" | "acc";
 export type CategoryId = "reglement" | "physique" | "technique" | "mental" | "tactique";
 
 export interface Evaluation {
-  success?: string;
-  fail?: string;
-  note?: string;
+  success?: string | undefined;
+  fail?: string | undefined;
+  note?: string | undefined;
 }
 
 export interface CriterionNode {
@@ -18,11 +18,11 @@ export interface CriterionNode {
   label: string;
   kind: NodeKind;
   /** Libellé dynamique pour les seuils physiques configurables. */
-  threshold?: ThresholdKey;
-  evaluation?: Evaluation;
+  threshold?: ThresholdKey | undefined;
+  evaluation?: Evaluation | undefined;
   /** Résultats proposés dans le formulaire (hérités par les descendants). */
-  results?: string[];
-  children?: CriterionNode[];
+  results?: string[] | undefined;
+  children?: CriterionNode[] | undefined;
 }
 
 const RES_REUSSI = ["Réussi", "Raté", "Autre"];
@@ -379,7 +379,7 @@ export function groupOf(nodeId: string): CodingGroupId | null {
 export interface CriterionOption {
   id: string;
   label: string;
-  section?: string;
+  section?: string | undefined;
 }
 
 /** Critères (niveau « criterion ») d'un groupe, avec leur section éventuelle (collectif). */
