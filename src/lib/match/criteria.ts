@@ -82,7 +82,7 @@ export const CRITERIA_TREE: CriterionNode = {
           s("phy.hi.s2", "Seuil de 25 km/h", { threshold: "hi2" }),
         ]),
         c("phy.acc", "Accélération / décélération", {}, [
-          s("phy.acc.s", "Seuil supérieur à 2,5", { threshold: "acc" }),
+          s("phy.acc.s", "Seuil supérieur à 2,5 m/s²", { threshold: "acc" }),
         ]),
         c("phy.saut", "Saut"),
         c("phy.duel", "Duel physique"),
