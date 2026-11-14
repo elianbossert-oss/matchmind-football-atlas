@@ -102,10 +102,15 @@ function AnalysePage() {
     if (!pendingScroll) return;
     const els = document.querySelectorAll<HTMLElement>(`[data-node-id="${pendingScroll}"]`);
     const visible = [...els].find((el) => el.offsetParent !== null);
-    visible?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
-    visible?.focus({ preventScroll: true });
+    visible?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    if (pendingScroll !== "root") visible?.focus({ preventScroll: true });
     setPendingScroll(null);
   }, [pendingScroll, expanded]);
+
+  // Centre la carte sur « Analyse du match » à l'ouverture (ordinateur).
+  useEffect(() => {
+    if (window.matchMedia("(min-width: 768px)").matches) setPendingScroll("root");
+  }, []);
 
   const toggle = useCallback((id: string) => {
     setExpanded((prev) => {
@@ -293,10 +298,16 @@ function AnalysePage() {
                 </div>
               )}
             </div>
-            <Button variant="soft" size="sm" onClick={() => setExpanded(new Set(expandableIds()))}>
+            <Button variant="soft" size="sm" onClick={() => {
+                setExpanded(new Set(expandableIds()));
+                setPendingScroll("root");
+              }}>
               <ChevronsUpDown /> Tout développer
             </Button>
-            <Button variant="soft" size="sm" onClick={() => setExpanded(new Set())}>
+            <Button variant="soft" size="sm" onClick={() => {
+                setExpanded(new Set());
+                setPendingScroll("root");
+              }}>
               <ChevronsDownUp /> Tout réduire
             </Button>
           </div>
