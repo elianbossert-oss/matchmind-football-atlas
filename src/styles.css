@@ -349,3 +349,4 @@
 
 .branch-top { border-top: 3px solid var(--branch); }
 .text-branch { color: var(--branch); }
+.bg-branch { background-color: var(--branch); }

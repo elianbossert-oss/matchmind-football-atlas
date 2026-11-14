@@ -75,7 +75,7 @@ export function ResultsPanel({
     <section
       id="resultats"
       data-cat={cat}
-      className="flex min-h-0 flex-col overflow-hidden rounded-xl border bg-card shadow-panel"
+      className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border bg-card shadow-panel"
     >
       <header className="branch-top space-y-2 border-b p-4">
         {breadcrumb.length > 0 && (

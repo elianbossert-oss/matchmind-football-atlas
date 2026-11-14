@@ -276,7 +276,7 @@ function AnalysePage() {
                           onClick={() => pickSearch(e.node.id)}
                           className="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left hover:bg-accent"
                         >
-                          <span className="mt-1.5 size-2 shrink-0 rounded-full bg-[var(--branch)]" />
+                          <span className="mt-1.5 size-2 shrink-0 rounded-full bg-branch" />
                           <span className="min-w-0">
                             <span className="block text-sm">{nodeLabel(e.node, config)}</span>
                             {parents && (
