@@ -346,3 +346,6 @@
   background: color-mix(in oklab, var(--primary) 10%, var(--card));
   border-color: color-mix(in oklab, var(--primary) 55%, transparent);
 }
+
+.branch-top { border-top: 3px solid var(--branch); }
+.text-branch { color: var(--branch); }

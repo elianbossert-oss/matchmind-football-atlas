@@ -77,7 +77,7 @@ export function ResultsPanel({
       data-cat={cat}
       className="flex min-h-0 flex-col overflow-hidden rounded-xl border bg-card shadow-panel"
     >
-      <header className="space-y-2 border-b p-4" style={{ borderTop: "3px solid var(--branch)" }}>
+      <header className="branch-top space-y-2 border-b p-4">
         {breadcrumb.length > 0 && (
           <p className="truncate text-xs text-muted-foreground">{breadcrumb.join(" › ")}</p>
         )}
@@ -86,7 +86,7 @@ export function ResultsPanel({
             {node ? nodeLabel(node, config) : "—"}
           </h2>
           <div className="shrink-0 text-right">
-            <p className="font-mono text-2xl leading-none" style={{ color: "var(--branch)" }}>
+            <p className="text-branch font-mono text-2xl leading-none">
               {actions.length}
             </p>
             <p className="text-[0.65rem] uppercase tracking-wider text-muted-foreground">
