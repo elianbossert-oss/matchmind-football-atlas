@@ -71,10 +71,9 @@ export function evaluationFor(nodeId: string, config: StaffConfig): Evaluation |
   while (id) {
     const entry = CRITERIA_INDEX.get(id);
     if (!entry) return undefined;
-    const override = config.evaluations[id];
-    if (override && (override.success || override.fail || override.note)) return override;
+    if (Object.hasOwn(config.evaluations, id)) return config.evaluations[id];
     if (entry.node.evaluation) return entry.node.evaluation;
-    if (entry.node.kind === "criterion") return override;
+    if (entry.node.kind === "criterion") return undefined;
     id = entry.parentId;
   }
   return undefined;
