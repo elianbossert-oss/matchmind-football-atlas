@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- The criteria tree lives only in `src/lib/match/criteria.ts`; UI, form and filters derive from it — keeps the staff's fixed list in one place.
+- Coded actions, staff settings and the video reference are stored in the browser (localStorage) via `usePersisted`; local video files must be re-selected after reload because object URLs don't persist.
+- Pure rules (filtering, pre-roll start, threshold labels) live in `src/lib/match/logic.ts` and are covered by `logic.test.ts`.
