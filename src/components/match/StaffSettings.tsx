@@ -95,7 +95,7 @@ export function StaffSettings({ open, onOpenChange, config, onSave }: Props) {
               [
                 ["hi1", "Course à haute intensité — seuil 1", "km/h"],
                 ["hi2", "Course à haute intensité — seuil 2", "km/h"],
-                ["acc", "Accélération / décélération — seuil supérieur à", ""],
+                ["acc", "Accélération / décélération — seuil supérieur à", "m/s²"],
               ] as const
             ).map(([k, label, unit]) => (
               <div key={k} className="flex items-end gap-3">

@@ -55,7 +55,7 @@ export function nodeLabel(node: CriterionNode, config: StaffConfig): string {
     case "hi2":
       return `Seuil de ${fr(config.thresholds.hi2)} km/h`;
     case "acc":
-      return `Seuil supérieur à ${fr(config.thresholds.acc)}`;
+      return `Seuil supérieur à ${fr(config.thresholds.acc)} m/s²`;
     default:
       return node.label;
   }

@@ -97,7 +97,7 @@ describe("paramètres staff", () => {
     expect(nodeLabel(CRITERIA_INDEX.get("phy.hi.s1")!.node, DEFAULT_CONFIG)).toBe("Seuil de 19,8 km/h");
     expect(nodeLabel(CRITERIA_INDEX.get("phy.hi.s1")!.node, config)).toBe("Seuil de 21 km/h");
     expect(nodeLabel(CRITERIA_INDEX.get("phy.hi.s2")!.node, config)).toBe("Seuil de 24,5 km/h");
-    expect(nodeLabel(CRITERIA_INDEX.get("phy.acc.s")!.node, config)).toBe("Seuil supérieur à 3");
+    expect(nodeLabel(CRITERIA_INDEX.get("phy.acc.s")!.node, config)).toBe("Seuil supérieur à 3 m/s²");
   });
   it("la définition d'évaluation modifiée par le staff remplace celle par défaut", () => {
     const config = { ...DEFAULT_CONFIG, evaluations: { "tec.passe": { success: "Passe vers l’avant" } } };
