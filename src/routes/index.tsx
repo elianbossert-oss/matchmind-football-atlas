@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { ActionForm, type ActionDraft } from "@/components/match/ActionForm";
 import { MindMap } from "@/components/match/MindMap";
+import { QuickCode } from "@/components/match/QuickCode";
 import { ResultsPanel } from "@/components/match/ResultsPanel";
 import { StaffSettings } from "@/components/match/StaffSettings";
 import { VideoPanel, type VideoSource } from "@/components/match/VideoPanel";
@@ -15,8 +16,10 @@ import {
   DEFAULT_CONFIG,
   actionsForNode,
   countByNode,
+  matchClock,
   nodeLabel,
   normalize,
+  formatTimecode,
   playbackStart,
   scopeOf,
   type CodedAction,
@@ -54,6 +57,10 @@ function AnalysePage() {
   const [config, setConfig] = usePersisted<StaffConfig>(`${KEY}:config`, DEFAULT_CONFIG);
   const [videoMeta, setVideoMeta] = usePersisted<VideoSource | null>(`${KEY}:video`, null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [quick, setQuick] = usePersisted<{ player: string; team: string; period: Period }>(
+    `${KEY}:quick`,
+    { player: "", team: "", period: "1MT" },
+  );
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -174,7 +181,9 @@ function AnalysePage() {
     setFormOpen(true);
   };
 
-  const save: React.ComponentProps<typeof ActionForm>["onSave"] = (data) => {
+  type ActionInput = Parameters<React.ComponentProps<typeof ActionForm>["onSave"]>[0];
+
+  const storeAction = (data: ActionInput): CodedAction => {
     const existing = data.id ? actions.find((a) => a.id === data.id) : undefined;
     const id = existing?.id ?? crypto.randomUUID();
     const action: CodedAction = {
@@ -184,13 +193,56 @@ function AnalysePage() {
       thumbnail: existing && existing.videoTime === data.videoTime ? existing.thumbnail : undefined,
     };
     setActions((prev) => (existing ? prev.map((a) => (a.id === id ? action : a)) : [...prev, action]));
-    setFormOpen(false);
-    toast.success(existing ? "Action modifiée" : "Action enregistrée");
     if (source?.url && !action.thumbnail) {
       void captureFrame(source.url, action.videoTime, source.kind === "url").then((thumb) => {
         if (thumb) setActions((prev) => prev.map((a) => (a.id === id ? { ...a, thumbnail: thumb } : a)));
       });
     }
+    return action;
+  };
+
+  const save = (data: ActionInput) => {
+    storeAction(data);
+    setFormOpen(false);
+    toast.success(data.id ? "Action modifiée" : "Action enregistrée");
+  };
+
+  /** Bouton rapide : enregistre tout de suite au timecode actuel, sans arrêter la vidéo. */
+  const quickCode = (nodeId: string, result: string) => {
+    const video = videoRef.current;
+    if (!video || !source?.url) {
+      toast.error("Chargez d’abord la vidéo du match.");
+      return;
+    }
+    const videoTime = video.currentTime;
+    const collective = scopeOf(nodeId) === "collectif";
+    const actor = (collective ? quick.team : quick.player).trim() || "À préciser";
+    const action = storeAction({
+      nodeId,
+      actor,
+      result,
+      period: quick.period,
+      ...matchClock(videoTime),
+      videoTime,
+      comment: "",
+    });
+    const node = getNode(nodeId);
+    toast.success(`${node ? nodeLabel(node, config) : "Action"} — ${result}`, {
+      description: `${actor} · ${formatTimecode(videoTime)}`,
+      duration: 4000,
+      action: {
+        label: "Compléter",
+        onClick: () => {
+          videoRef.current?.pause();
+          setDraft({ action, videoTime: action.videoTime });
+          setFormOpen(true);
+        },
+      },
+      cancel: {
+        label: "Annuler",
+        onClick: () => setActions((prev) => prev.filter((a) => a.id !== action.id)),
+      },
+    });
   };
 
   const onSource = (s: VideoSource) => {
@@ -229,12 +281,29 @@ function AnalysePage() {
         </div>
       </header>
 
-      <main className="grid flex-1 gap-4 p-4 lg:h-[calc(100dvh-4rem)] lg:grid-cols-[minmax(0,1fr)_minmax(380px,440px)] lg:grid-rows-[auto_minmax(0,1fr)] lg:p-6">
+      <main className="grid flex-1 gap-4 p-4 lg:h-[calc(100dvh-4rem)] lg:grid-cols-[minmax(0,1fr)_minmax(380px,440px)] lg:grid-rows-[auto_auto_minmax(0,1fr)] lg:p-6">
         <div className="order-1 lg:col-start-2 lg:row-start-1">
           <VideoPanel videoRef={videoRef} source={source} onSource={onSource} preRoll={config.preRoll} />
         </div>
 
-        <section className="order-2 flex min-h-[60dvh] flex-col overflow-hidden rounded-xl border bg-card shadow-panel lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:min-h-0">
+        <div className="order-1 lg:col-start-2 lg:row-start-2">
+          <QuickCode
+            config={config}
+            onConfigChange={setConfig}
+            player={quick.player}
+            onPlayer={(player) => setQuick((q) => ({ ...q, player }))}
+            team={quick.team}
+            onTeam={(team) => setQuick((q) => ({ ...q, team }))}
+            period={quick.period}
+            onPeriod={(period) => setQuick((q) => ({ ...q, period }))}
+            players={actorsIndividual}
+            teams={actorsCollective}
+            counts={counts}
+            onCode={quickCode}
+          />
+        </div>
+
+        <section className="order-2 flex min-h-[60dvh] flex-col overflow-hidden rounded-xl border bg-card shadow-panel lg:col-start-1 lg:row-span-3 lg:row-start-1 lg:min-h-0">
           <div className="flex flex-wrap items-center gap-2 border-b p-3">
             <div className="relative min-w-0 flex-1 basis-56">
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -324,7 +393,7 @@ function AnalysePage() {
           </div>
         </section>
 
-        <div className="order-3 flex min-h-[24rem] flex-col lg:col-start-2 lg:row-start-2 lg:min-h-0">
+        <div className="order-3 flex min-h-[24rem] flex-col lg:col-start-2 lg:row-start-3 lg:min-h-0">
           <ResultsPanel
             nodeId={selectedId}
             actions={filtered}
