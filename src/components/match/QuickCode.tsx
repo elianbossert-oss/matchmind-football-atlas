@@ -69,7 +69,7 @@ export function QuickCode(p: Props) {
           <Zap className="size-4 text-primary" /> Codage rapide
         </span>
         <Select value={p.period} onValueChange={(v) => p.onPeriod(v as Period)}>
-          <SelectTrigger className="h-8 w-[7.5rem] text-xs" aria-label="Période">
+          <SelectTrigger className="h-9 w-[7.5rem] text-xs" aria-label="Période">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -80,24 +80,13 @@ export function QuickCode(p: Props) {
             ))}
           </SelectContent>
         </Select>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="ml-auto h-8"
-          onClick={() => setPickerOpen(true)}
-        >
-          <Settings2 /> Choisir les boutons
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2 border-b p-2.5">
         <Input
           list="quick-players"
           value={p.player}
           onChange={(e) => p.onPlayer(e.target.value)}
           placeholder="Joueur en cours"
           aria-label="Joueur en cours"
-          className="h-8 text-sm"
+          className="h-9 min-w-[9rem] flex-1 basis-36 text-sm"
         />
         <datalist id="quick-players">
           {p.players.map((a) => (
@@ -110,13 +99,21 @@ export function QuickCode(p: Props) {
           onChange={(e) => p.onTeam(e.target.value)}
           placeholder="Équipe (collectif)"
           aria-label="Équipe pour les actions collectives"
-          className="h-8 text-sm"
+          className="h-9 min-w-[9rem] flex-1 basis-36 text-sm"
         />
         <datalist id="quick-teams">
           {p.teams.map((a) => (
             <option key={a} value={a} />
           ))}
         </datalist>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="ml-auto h-9"
+          onClick={() => setPickerOpen(true)}
+        >
+          <Settings2 /> Choisir les boutons
+        </Button>
       </div>
 
       {shortcuts.length === 0 ? (
@@ -124,22 +121,28 @@ export function QuickCode(p: Props) {
           Aucun bouton. Cliquez sur « Choisir les boutons ».
         </p>
       ) : (
-        <div className="grid max-h-56 grid-cols-1 gap-1.5 overflow-y-auto p-2.5 sm:grid-cols-2">
+        <div className="grid gap-2 p-2.5 sm:grid-cols-2 xl:grid-cols-3">
           {shortcuts.map((id) => {
             const node = getNode(id)!;
-            const parent = node.kind === "sub" ? getNode(CRITERIA_INDEX.get(id)?.parentId ?? "") : null;
-            const label = parent ? `${parent.label} · ${nodeLabel(node, p.config)}` : nodeLabel(node, p.config);
+            const parent =
+              node.kind === "sub" ? getNode(CRITERIA_INDEX.get(id)?.parentId ?? "") : null;
+            const label = parent
+              ? `${parent.label} · ${nodeLabel(node, p.config)}`
+              : nodeLabel(node, p.config);
             return (
               <div
                 key={id}
                 data-cat={catAttr(id)}
-                className="quick-card flex items-center gap-1.5 rounded-md border bg-background/40 py-1 pl-2 pr-1"
+                className="quick-card flex items-center gap-2 rounded-md border bg-background/40 px-2.5 py-2"
               >
                 <span className="size-2 shrink-0 rounded-full bg-branch" />
-                <span className="line-clamp-2 min-w-0 flex-1 text-xs font-medium leading-tight" title={label}>
+                <span
+                  className="line-clamp-2 min-w-0 flex-1 text-sm font-semibold leading-tight"
+                  title={label}
+                >
                   {label}
                 </span>
-                <span className="font-mono text-[0.6rem] text-muted-foreground">
+                <span className="font-mono text-xs text-muted-foreground">
                   {p.counts.get(id) ?? 0}
                 </span>
                 {quickResults(id, p.config).map((r) => (
@@ -216,14 +219,25 @@ function ShortcutPicker({
         </DialogHeader>
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
           {GROUPS.map((g) => (
-            <div key={g.id} data-cat={g.id === "tac.collectif" ? "collectif" : g.id.split(".")[0] === "tac" ? "tactique" : g.id}>
+            <div
+              key={g.id}
+              data-cat={
+                g.id === "tac.collectif"
+                  ? "collectif"
+                  : g.id.split(".")[0] === "tac"
+                    ? "tactique"
+                    : g.id
+              }
+            >
               <p className="text-branch mb-1 font-display text-lg font-bold uppercase tracking-wide">
                 {g.label}
               </p>
               {criteriaOfGroup(g.id).map((c) => (
                 <div key={c.id}>
                   {row(c.id, c.section ? `${c.label} (${c.section.slice(3)})` : c.label)}
-                  {(getNode(c.id)?.children ?? []).map((s) => row(s.id, nodeLabel(s, config), true))}
+                  {(getNode(c.id)?.children ?? []).map((s) =>
+                    row(s.id, nodeLabel(s, config), true),
+                  )}
                 </div>
               ))}
             </div>
