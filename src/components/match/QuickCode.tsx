@@ -136,7 +136,7 @@ export function QuickCode(p: Props) {
                 className="quick-card flex items-center gap-1.5 rounded-md border bg-background/40 py-1 pl-2 pr-1"
               >
                 <span className="size-2 shrink-0 rounded-full bg-branch" />
-                <span className="min-w-0 flex-1 truncate text-xs font-medium" title={label}>
+                <span className="line-clamp-2 min-w-0 flex-1 text-xs font-medium leading-tight" title={label}>
                   {label}
                 </span>
                 <span className="font-mono text-[0.6rem] text-muted-foreground">
