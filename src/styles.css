@@ -351,13 +351,20 @@
 .text-branch { color: var(--branch); }
 .bg-branch { background-color: var(--branch); }
 
+/* ===== Scène vidéo : la plus grande surface qui tient à l'écran ===== */
+.video-stage {
+  --video-h: clamp(260px, 50dvh, 700px);
+  width: min(100%, calc(var(--video-h) * 16 / 9));
+  margin-inline: auto;
+}
+
 /* ===== Boutons de codage rapide ===== */
 .quick-card { border-left: 3px solid var(--branch); }
 .quick-result {
   flex-shrink: 0;
   border-radius: var(--radius-sm);
-  padding: 0.3rem 0.5rem;
-  font-size: 0.7rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.82rem;
   font-weight: 600;
   border: 1px solid var(--border);
   background: var(--muted);
