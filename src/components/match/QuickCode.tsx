@@ -106,7 +106,12 @@ export function QuickCode(p: Props) {
             <option key={a} value={a} />
           ))}
         </datalist>
-        <Button size="sm" variant="ghost" className="ml-auto h-9" onClick={() => setPickerOpen(true)}>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="ml-auto h-9"
+          onClick={() => setPickerOpen(true)}
+        >
           <Settings2 /> Choisir les boutons
         </Button>
       </div>
@@ -119,8 +124,11 @@ export function QuickCode(p: Props) {
         <div className="grid gap-2 p-2.5 sm:grid-cols-2 xl:grid-cols-3">
           {shortcuts.map((id) => {
             const node = getNode(id)!;
-            const parent = node.kind === "sub" ? getNode(CRITERIA_INDEX.get(id)?.parentId ?? "") : null;
-            const label = parent ? `${parent.label} · ${nodeLabel(node, p.config)}` : nodeLabel(node, p.config);
+            const parent =
+              node.kind === "sub" ? getNode(CRITERIA_INDEX.get(id)?.parentId ?? "") : null;
+            const label = parent
+              ? `${parent.label} · ${nodeLabel(node, p.config)}`
+              : nodeLabel(node, p.config);
             return (
               <div
                 key={id}
@@ -128,10 +136,15 @@ export function QuickCode(p: Props) {
                 className="quick-card flex items-center gap-2 rounded-md border bg-background/40 px-2.5 py-2"
               >
                 <span className="size-2 shrink-0 rounded-full bg-branch" />
-                <span className="line-clamp-2 min-w-0 flex-1 text-sm font-semibold leading-tight" title={label}>
+                <span
+                  className="line-clamp-2 min-w-0 flex-1 text-sm font-semibold leading-tight"
+                  title={label}
+                >
                   {label}
                 </span>
-                <span className="font-mono text-xs text-muted-foreground">{p.counts.get(id) ?? 0}</span>
+                <span className="font-mono text-xs text-muted-foreground">
+                  {p.counts.get(id) ?? 0}
+                </span>
                 {quickResults(id, p.config).map((r) => (
                   <button
                     key={r}
@@ -206,14 +219,25 @@ function ShortcutPicker({
         </DialogHeader>
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
           {GROUPS.map((g) => (
-            <div key={g.id} data-cat={g.id === "tac.collectif" ? "collectif" : g.id.split(".")[0] === "tac" ? "tactique" : g.id}>
+            <div
+              key={g.id}
+              data-cat={
+                g.id === "tac.collectif"
+                  ? "collectif"
+                  : g.id.split(".")[0] === "tac"
+                    ? "tactique"
+                    : g.id
+              }
+            >
               <p className="text-branch mb-1 font-display text-lg font-bold uppercase tracking-wide">
                 {g.label}
               </p>
               {criteriaOfGroup(g.id).map((c) => (
                 <div key={c.id}>
                   {row(c.id, c.section ? `${c.label} (${c.section.slice(3)})` : c.label)}
-                  {(getNode(c.id)?.children ?? []).map((s) => row(s.id, nodeLabel(s, config), true))}
+                  {(getNode(c.id)?.children ?? []).map((s) =>
+                    row(s.id, nodeLabel(s, config), true),
+                  )}
                 </div>
               ))}
             </div>

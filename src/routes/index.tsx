@@ -94,11 +94,15 @@ function AnalysePage() {
   );
 
   const actorsIndividual = useMemo(
-    () => [...new Set(actions.filter((a) => scopeOf(a.nodeId) === "individuel").map((a) => a.actor))],
+    () => [
+      ...new Set(actions.filter((a) => scopeOf(a.nodeId) === "individuel").map((a) => a.actor)),
+    ],
     [actions],
   );
   const actorsCollective = useMemo(
-    () => [...new Set(actions.filter((a) => scopeOf(a.nodeId) === "collectif").map((a) => a.actor))],
+    () => [
+      ...new Set(actions.filter((a) => scopeOf(a.nodeId) === "collectif").map((a) => a.actor)),
+    ],
     [actions],
   );
   const lastPeriod: Period = quick.period;
@@ -131,7 +135,10 @@ function AnalysePage() {
     setSelectedId(id);
     setActiveId(null);
     if (window.matchMedia("(max-width: 1023px)").matches) {
-      setTimeout(() => document.getElementById("resultats")?.scrollIntoView({ behavior: "smooth" }), 50);
+      setTimeout(
+        () => document.getElementById("resultats")?.scrollIntoView({ behavior: "smooth" }),
+        50,
+      );
     }
   }, []);
 
@@ -191,10 +198,13 @@ function AnalysePage() {
       createdAt: existing?.createdAt ?? Date.now(),
       thumbnail: existing && existing.videoTime === data.videoTime ? existing.thumbnail : undefined,
     };
-    setActions((prev) => (existing ? prev.map((a) => (a.id === id ? action : a)) : [...prev, action]));
+    setActions((prev) =>
+      existing ? prev.map((a) => (a.id === id ? action : a)) : [...prev, action],
+    );
     if (source?.url && !action.thumbnail) {
       void captureFrame(source.url, action.videoTime, source.kind === "url").then((thumb) => {
-        if (thumb) setActions((prev) => prev.map((a) => (a.id === id ? { ...a, thumbnail: thumb } : a)));
+        if (thumb)
+          setActions((prev) => prev.map((a) => (a.id === id ? { ...a, thumbnail: thumb } : a)));
       });
     }
     return action;
@@ -266,12 +276,18 @@ function AnalysePage() {
               Analyse du match
             </h1>
             <p className="hidden text-xs text-muted-foreground sm:block">
-              {actions.length} action{actions.length > 1 ? "s" : ""} codée{actions.length > 1 ? "s" : ""}
+              {actions.length} action{actions.length > 1 ? "s" : ""} codée
+              {actions.length > 1 ? "s" : ""}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="soft" size="sm" onClick={() => setSettingsOpen(true)} aria-label="Paramètres staff">
+          <Button
+            variant="soft"
+            size="sm"
+            onClick={() => setSettingsOpen(true)}
+            aria-label="Paramètres staff"
+          >
             <Settings2 /> <span className="hidden sm:inline">Paramètres staff</span>
           </Button>
           <Button variant="hero" size="sm" onClick={openNew}>
@@ -282,7 +298,12 @@ function AnalysePage() {
 
       <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-5 lg:p-6">
         <div className="video-stage">
-          <VideoPanel videoRef={videoRef} source={source} onSource={onSource} preRoll={config.preRoll} />
+          <VideoPanel
+            videoRef={videoRef}
+            source={source}
+            onSource={onSource}
+            preRoll={config.preRoll}
+          />
         </div>
 
         <QuickCode
@@ -302,115 +323,126 @@ function AnalysePage() {
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(360px,440px)]">
           <section className="flex min-h-[60dvh] flex-col overflow-hidden rounded-xl border bg-card shadow-panel lg:h-[72dvh]">
-          <div className="flex flex-wrap items-center gap-2 border-b p-3">
-            <div className="relative min-w-0 flex-1 basis-56">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && searchResults[0]) pickSearch(searchResults[0].node.id);
-                  if (e.key === "Escape") setQuery("");
+            <div className="flex flex-wrap items-center gap-2 border-b p-3">
+              <div className="relative min-w-0 flex-1 basis-56">
+                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && searchResults[0]) pickSearch(searchResults[0].node.id);
+                    if (e.key === "Escape") setQuery("");
+                  }}
+                  placeholder="Rechercher un critère…"
+                  className="pl-9 pr-9"
+                  aria-label="Rechercher un critère"
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground"
+                    aria-label="Effacer la recherche"
+                  >
+                    <X className="size-4" />
+                  </button>
+                )}
+                {query.trim() && (
+                  <div className="absolute inset-x-0 top-full z-20 mt-1 max-h-80 overflow-y-auto rounded-lg border bg-popover p-1 shadow-panel">
+                    {searchResults.length === 0 ? (
+                      <p className="p-3 text-sm text-muted-foreground">Aucun critère trouvé</p>
+                    ) : (
+                      searchResults.map((e) => {
+                        const parents = e.path
+                          .slice(0, -1)
+                          .map((id) => {
+                            const n = getNode(id);
+                            return n ? nodeLabel(n, config) : id;
+                          })
+                          .join(" › ");
+                        const cat =
+                          e.scope === "collectif" ? "collectif" : (e.categoryId ?? "root");
+                        return (
+                          <button
+                            key={e.node.id}
+                            type="button"
+                            data-cat={cat}
+                            onClick={() => pickSearch(e.node.id)}
+                            className="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left hover:bg-accent"
+                          >
+                            <span className="mt-1.5 size-2 shrink-0 rounded-full bg-branch" />
+                            <span className="min-w-0">
+                              <span className="block text-sm">{nodeLabel(e.node, config)}</span>
+                              {parents && (
+                                <span className="block truncate text-xs text-muted-foreground">
+                                  {parents}
+                                </span>
+                              )}
+                            </span>
+                            <span className="ml-auto font-mono text-xs text-muted-foreground">
+                              {counts.get(e.node.id) ?? 0}
+                            </span>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
+              </div>
+              <Button
+                variant="soft"
+                size="sm"
+                onClick={() => {
+                  setExpanded(new Set(expandableIds()));
+                  setPendingScroll("root");
                 }}
-                placeholder="Rechercher un critère…"
-                className="pl-9 pr-9"
-                aria-label="Rechercher un critère"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => setQuery("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground"
-                  aria-label="Effacer la recherche"
-                >
-                  <X className="size-4" />
-                </button>
-              )}
-              {query.trim() && (
-                <div className="absolute inset-x-0 top-full z-20 mt-1 max-h-80 overflow-y-auto rounded-lg border bg-popover p-1 shadow-panel">
-                  {searchResults.length === 0 ? (
-                    <p className="p-3 text-sm text-muted-foreground">Aucun critère trouvé</p>
-                  ) : (
-                    searchResults.map((e) => {
-                      const parents = e.path
-                        .slice(0, -1)
-                        .map((id) => {
-                          const n = getNode(id);
-                          return n ? nodeLabel(n, config) : id;
-                        })
-                        .join(" › ");
-                      const cat = e.scope === "collectif" ? "collectif" : e.categoryId ?? "root";
-                      return (
-                        <button
-                          key={e.node.id}
-                          type="button"
-                          data-cat={cat}
-                          onClick={() => pickSearch(e.node.id)}
-                          className="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left hover:bg-accent"
-                        >
-                          <span className="mt-1.5 size-2 shrink-0 rounded-full bg-branch" />
-                          <span className="min-w-0">
-                            <span className="block text-sm">{nodeLabel(e.node, config)}</span>
-                            {parents && (
-                              <span className="block truncate text-xs text-muted-foreground">{parents}</span>
-                            )}
-                          </span>
-                          <span className="ml-auto font-mono text-xs text-muted-foreground">
-                            {counts.get(e.node.id) ?? 0}
-                          </span>
-                        </button>
-                      );
-                    })
-                  )}
-                </div>
-              )}
+              >
+                <ChevronsUpDown /> Tout développer
+              </Button>
+              <Button
+                variant="soft"
+                size="sm"
+                onClick={() => {
+                  setExpanded(new Set());
+                  setPendingScroll("root");
+                }}
+              >
+                <ChevronsDownUp /> Tout réduire
+              </Button>
             </div>
-            <Button variant="soft" size="sm" onClick={() => {
-                setExpanded(new Set(expandableIds()));
-                setPendingScroll("root");
-              }}>
-              <ChevronsUpDown /> Tout développer
-            </Button>
-            <Button variant="soft" size="sm" onClick={() => {
-                setExpanded(new Set());
-                setPendingScroll("root");
-              }}>
-              <ChevronsDownUp /> Tout réduire
-            </Button>
-          </div>
-          <div className="pitch-canvas min-h-0 flex-1 overflow-auto">
-            <MindMap
-              expanded={expanded}
-              onToggle={toggle}
-              selectedId={selectedId}
-              onSelect={select}
-              counts={counts}
-              matches={matchSet}
-              config={config}
-            />
-          </div>
+            <div className="pitch-canvas min-h-0 flex-1 overflow-auto">
+              <MindMap
+                expanded={expanded}
+                onToggle={toggle}
+                selectedId={selectedId}
+                onSelect={select}
+                counts={counts}
+                matches={matchSet}
+                config={config}
+              />
+            </div>
           </section>
 
           <div className="flex min-h-[60dvh] flex-col lg:h-[72dvh]">
-          <ResultsPanel
-            nodeId={selectedId}
-            actions={filtered}
-            activeId={activeId}
-            config={config}
-            onPlay={play}
-            onPrev={() => step(-1)}
-            onNext={() => step(1)}
-            onEdit={(a) => {
-              videoRef.current?.pause();
-              setDraft({ action: a, videoTime: a.videoTime });
-              setFormOpen(true);
-            }}
-            onDelete={(a) => {
-              setActions((prev) => prev.filter((x) => x.id !== a.id));
-              if (activeId === a.id) setActiveId(null);
-              toast("Action supprimée");
-            }}
-          />
+            <ResultsPanel
+              nodeId={selectedId}
+              actions={filtered}
+              activeId={activeId}
+              config={config}
+              onPlay={play}
+              onPrev={() => step(-1)}
+              onNext={() => step(1)}
+              onEdit={(a) => {
+                videoRef.current?.pause();
+                setDraft({ action: a, videoTime: a.videoTime });
+                setFormOpen(true);
+              }}
+              onDelete={(a) => {
+                setActions((prev) => prev.filter((x) => x.id !== a.id));
+                if (activeId === a.id) setActiveId(null);
+                toast("Action supprimée");
+              }}
+            />
           </div>
         </div>
       </main>
@@ -426,7 +458,12 @@ function AnalysePage() {
         getCurrentTime={currentTime}
         onSave={save}
       />
-      <StaffSettings open={settingsOpen} onOpenChange={setSettingsOpen} config={config} onSave={setConfig} />
+      <StaffSettings
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        config={config}
+        onSave={setConfig}
+      />
     </div>
   );
 }
