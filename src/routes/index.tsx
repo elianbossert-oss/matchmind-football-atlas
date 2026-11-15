@@ -389,9 +389,9 @@ function AnalysePage() {
               config={config}
             />
           </div>
-        </section>
+          </section>
 
-        <div className="order-3 flex min-h-[24rem] flex-col lg:col-start-2 lg:row-start-3 lg:min-h-0">
+          <div className="flex min-h-[60dvh] flex-col lg:h-[72dvh]">
           <ResultsPanel
             nodeId={selectedId}
             actions={filtered}
@@ -411,6 +411,7 @@ function AnalysePage() {
               toast("Action supprimée");
             }}
           />
+          </div>
         </div>
       </main>
 
