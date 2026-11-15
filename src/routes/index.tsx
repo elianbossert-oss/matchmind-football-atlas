@@ -280,29 +280,28 @@ function AnalysePage() {
         </div>
       </header>
 
-      <main className="grid flex-1 gap-4 p-4 lg:h-[calc(100dvh-4rem)] lg:grid-cols-[minmax(0,1fr)_minmax(380px,440px)] lg:grid-rows-[auto_auto_minmax(0,1fr)] lg:p-6">
-        <div className="order-1 lg:col-start-2 lg:row-start-1">
+      <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-5 lg:p-6">
+        <div className="video-stage">
           <VideoPanel videoRef={videoRef} source={source} onSource={onSource} preRoll={config.preRoll} />
         </div>
 
-        <div className="order-1 lg:col-start-2 lg:row-start-2">
-          <QuickCode
-            config={config}
-            onConfigChange={setConfig}
-            player={quick.player}
-            onPlayer={(player) => setQuick((q) => ({ ...q, player }))}
-            team={quick.team}
-            onTeam={(team) => setQuick((q) => ({ ...q, team }))}
-            period={quick.period}
-            onPeriod={(period) => setQuick((q) => ({ ...q, period }))}
-            players={actorsIndividual}
-            teams={actorsCollective}
-            counts={counts}
-            onCode={quickCode}
-          />
-        </div>
+        <QuickCode
+          config={config}
+          onConfigChange={setConfig}
+          player={quick.player}
+          onPlayer={(player) => setQuick((q) => ({ ...q, player }))}
+          team={quick.team}
+          onTeam={(team) => setQuick((q) => ({ ...q, team }))}
+          period={quick.period}
+          onPeriod={(period) => setQuick((q) => ({ ...q, period }))}
+          players={actorsIndividual}
+          teams={actorsCollective}
+          counts={counts}
+          onCode={quickCode}
+        />
 
-        <section className="order-2 flex min-h-[60dvh] flex-col overflow-hidden rounded-xl border bg-card shadow-panel lg:col-start-1 lg:row-span-3 lg:row-start-1 lg:min-h-0">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(360px,440px)]">
+          <section className="flex min-h-[60dvh] flex-col overflow-hidden rounded-xl border bg-card shadow-panel lg:h-[72dvh]">
           <div className="flex flex-wrap items-center gap-2 border-b p-3">
             <div className="relative min-w-0 flex-1 basis-56">
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
