@@ -101,8 +101,7 @@ function AnalysePage() {
     () => [...new Set(actions.filter((a) => scopeOf(a.nodeId) === "collectif").map((a) => a.actor))],
     [actions],
   );
-  const lastPeriod: Period =
-    [...actions].sort((a, b) => b.createdAt - a.createdAt)[0]?.period ?? "1MT";
+  const lastPeriod: Period = quick.period;
 
   // Défilement vers un nœud retrouvé par la recherche, une fois la branche dépliée.
   useEffect(() => {
