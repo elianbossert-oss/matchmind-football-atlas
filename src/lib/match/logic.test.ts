@@ -8,6 +8,7 @@ import {
   evaluationFor,
   nodeLabel,
   parseTimecode,
+  quickResults,
   playbackStart,
   scopeOf,
   type CodedAction,
@@ -103,5 +104,13 @@ describe("paramètres staff", () => {
     const config = { ...DEFAULT_CONFIG, evaluations: { "tec.passe": { success: "Passe vers l’avant" } } };
     expect(evaluationFor("tec.passe.courte", config)?.success).toBe("Passe vers l’avant");
     expect(evaluationFor("tec.passe", DEFAULT_CONFIG)?.success).toMatch(/^Le partenaire contrôle/);
+  });
+});
+
+describe("codage rapide", () => {
+  it("propose au plus deux résultats, sans « Autre »", () => {
+    expect(quickResults("tec.passe", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
+    expect(quickResults("reg.carton", DEFAULT_CONFIG)).toEqual(["Jaune", "Rouge"]);
+    expect(quickResults("tac.ind.placement", DEFAULT_CONFIG)).toEqual(["Conforme", "Non conforme"]);
   });
 });

@@ -37,6 +37,8 @@ export interface StaffConfig {
   preRoll: number;
   evaluations: Record<string, Evaluation>;
   results: Record<string, string[]>;
+  /** Critères affichés en boutons de codage rapide sous la vidéo. */
+  shortcuts: string[];
 }
 
 export const DEFAULT_CONFIG: StaffConfig = {
@@ -44,6 +46,16 @@ export const DEFAULT_CONFIG: StaffConfig = {
   preRoll: 5,
   evaluations: {},
   results: {},
+  shortcuts: [
+    "tec.passe",
+    "tec.controle",
+    "tec.dribble",
+    "tec.tir",
+    "tec.centre",
+    "tec.interception",
+    "reg.faute-commise",
+    "tac.ind.pressing",
+  ],
 };
 
 const fr = (n: number) => n.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
@@ -91,6 +103,18 @@ export function resultsFor(nodeId: string, config: StaffConfig): string[] {
     id = entry.parentId;
   }
   return ["Réussi", "Raté", "Autre"];
+}
+
+/** Résultats proposés sur un bouton rapide : au plus deux, sans « Autre ». */
+export function quickResults(nodeId: string, config: StaffConfig): string[] {
+  const list = resultsFor(nodeId, config).filter((r) => normalize(r) !== "autre");
+  return (list.length ? list : resultsFor(nodeId, config)).slice(0, 2);
+}
+
+/** Minute/seconde de match proposées à partir de la position dans la vidéo. */
+export function matchClock(videoTime: number): { minute: number; second: number } {
+  const t = Math.max(0, Math.floor(videoTime));
+  return { minute: Math.floor(t / 60), second: t % 60 };
 }
 
 const PERIOD_ORDER: Record<Period, number> = { "1MT": 0, "2MT": 1, P1: 2, P2: 3 };

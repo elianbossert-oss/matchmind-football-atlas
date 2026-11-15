@@ -350,3 +350,25 @@
 .branch-top { border-top: 3px solid var(--branch); }
 .text-branch { color: var(--branch); }
 .bg-branch { background-color: var(--branch); }
+
+/* ===== Boutons de codage rapide ===== */
+.quick-card { border-left: 3px solid var(--branch); }
+.quick-result {
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  color: var(--foreground);
+  transition: transform 100ms, background-color 150ms;
+  cursor: pointer;
+}
+.quick-result:active { transform: scale(0.94); }
+.quick-result[data-tone="positive"] { color: var(--success); border-color: color-mix(in oklab, var(--success) 40%, transparent); background: color-mix(in oklab, var(--success) 12%, transparent); }
+.quick-result[data-tone="positive"]:hover { background: color-mix(in oklab, var(--success) 28%, transparent); }
+.quick-result[data-tone="negative"] { color: var(--destructive); border-color: color-mix(in oklab, var(--destructive) 40%, transparent); background: color-mix(in oklab, var(--destructive) 12%, transparent); }
+.quick-result[data-tone="negative"]:hover { background: color-mix(in oklab, var(--destructive) 28%, transparent); }
+.quick-result[data-tone="warning"] { color: var(--warning); border-color: color-mix(in oklab, var(--warning) 40%, transparent); background: color-mix(in oklab, var(--warning) 12%, transparent); }
+.quick-result[data-tone="neutral"]:hover { background: var(--accent); }
