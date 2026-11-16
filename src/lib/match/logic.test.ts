@@ -7,7 +7,10 @@ import {
   countByNode,
   evaluationFor,
   nodeLabel,
+  migrateActions,
   parseRoster,
+  sectionOf,
+  upgradeConfig,
   parseTimecode,
   quickCards,
   quickResults,
@@ -135,5 +138,59 @@ describe("codage rapide", () => {
       "10 Griezmann",
       "7 Mbappé",
     ]);
+  });
+});
+
+describe("critères modifiés par le staff", () => {
+  it("Technique a un Duel Aérien / Au sol, Réussi ou Raté, et plus de Jeu de tête", () => {
+    expect(CRITERIA_INDEX.get("tec.duel")?.node.children?.map((c) => c.label)).toEqual([
+      "Aérien",
+      "Au sol",
+    ]);
+    expect(quickResults("tec.duel.sol", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
+    expect(CRITERIA_INDEX.has("tec.tete")).toBe(false);
+  });
+
+  it("Faute commise n'a plus de sous-critères", () => {
+    expect(CRITERIA_INDEX.get("reg.faute-commise")?.node.children).toBeUndefined();
+    expect(CRITERIA_INDEX.has("reg.faute-commise.tacle")).toBe(false);
+  });
+
+  it("les actions déjà codées sur un critère retiré sont rattachées au nouveau", () => {
+    const moved = migrateActions([
+      action("a", "reg.faute-commise.tacle", 1),
+      action("b", "tec.tete", 2),
+    ]);
+    expect(moved.map((a) => a.nodeId)).toEqual(["reg.faute-commise", "tec.duel.aerien"]);
+  });
+
+  it("les boutons existants gagnent Duel, Faute subie, la tactique individuelle et tout le collectif", () => {
+    const old = { ...DEFAULT_CONFIG, shortcuts: ["tec.passe", "tec.tete"], shortcutsVersion: undefined };
+    const up = upgradeConfig(old).shortcuts;
+    expect(up).not.toContain("tec.tete");
+    for (const id of [
+      "tec.duel",
+      "reg.faute-commise",
+      "reg.faute-subie",
+      "tac.ind.appel",
+      "tac.ind.soutien",
+      "tac.ind.repli",
+      "tac.ind.couverture",
+      "tac.ind.placement",
+    ])
+      if (id !== "reg.faute-commise") expect(up).toContain(id);
+    const sections = new Set(quickCards(up, "collectif").map((c) => sectionOf(c.id)?.label));
+    expect([...sections]).toEqual([
+      "A. Organisation offensive",
+      "B. Organisation défensive",
+      "C. Transitions défensives",
+      "D. Buts concédés",
+    ]);
+  });
+
+  it("une fois appliquée, la mise à jour ne remet pas un bouton retiré par le staff", () => {
+    const once = upgradeConfig({ ...DEFAULT_CONFIG, shortcutsVersion: undefined });
+    const removed = { ...once, shortcuts: once.shortcuts.filter((id) => id !== "tec.duel") };
+    expect(upgradeConfig(removed).shortcuts).not.toContain("tec.duel");
   });
 });
