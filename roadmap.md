@@ -5,3 +5,7 @@
 - [x] Formulaire « Ajouter une action » avec timecode auto + correction
 - [x] Paramètres staff : seuils physiques, définitions d'évaluation, résultats
 - [x] Tests des règles clés
+- [x] Boutons rapides plus compacts (4–5 colonnes)
+- [x] Passe (et tout critère à sous-critères) : total non cliquable + boutons Courte / Longue / En profondeur
+- [x] Effectif du staff et sélection du joueur en cours en un clic
+- [x] Bascule Individuel / Collectif des boutons rapides

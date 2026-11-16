@@ -7,7 +7,9 @@ import {
   countByNode,
   evaluationFor,
   nodeLabel,
+  parseRoster,
   parseTimecode,
+  quickCards,
   quickResults,
   playbackStart,
   scopeOf,
@@ -112,5 +114,26 @@ describe("codage rapide", () => {
     expect(quickResults("tec.passe", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
     expect(quickResults("reg.carton", DEFAULT_CONFIG)).toEqual(["Jaune", "Rouge"]);
     expect(quickResults("tac.ind.placement", DEFAULT_CONFIG)).toEqual(["Conforme", "Non conforme"]);
+  });
+});
+
+describe("codage rapide", () => {
+  it("Passe n'est pas cliquable : total + Courte, Longue, En profondeur", () => {
+    const [passe] = quickCards(["tec.passe"], "individuel");
+    expect(passe?.subs).toEqual(["tec.passe.courte", "tec.passe.longue", "tec.passe.profondeur"]);
+    expect(quickCards(["tec.controle"], "individuel")[0]?.subs).toEqual([]);
+  });
+
+  it("sépare les boutons individuels et collectifs", () => {
+    const ids = ["tec.passe", "col.def.pressing", "tac.ind.pressing"];
+    expect(quickCards(ids, "individuel").map((c) => c.id)).toEqual(["tec.passe", "tac.ind.pressing"]);
+    expect(quickCards(ids, "collectif").map((c) => c.id)).toEqual(["col.def.pressing"]);
+  });
+
+  it("lit l'effectif ligne par ligne sans doublons ni lignes vides", () => {
+    expect(parseRoster("10 Griezmann\n\n  7  Mbappé \n10 griezmann\n")).toEqual([
+      "10 Griezmann",
+      "7 Mbappé",
+    ]);
   });
 });

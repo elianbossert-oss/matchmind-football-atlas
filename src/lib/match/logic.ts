@@ -39,6 +39,8 @@ export interface StaffConfig {
   results: Record<string, string[]>;
   /** Critères affichés en boutons de codage rapide sous la vidéo. */
   shortcuts: string[];
+  /** Effectif saisi par le staff (un joueur par ligne). */
+  roster: string[];
 }
 
 export const DEFAULT_CONFIG: StaffConfig = {
@@ -56,6 +58,7 @@ export const DEFAULT_CONFIG: StaffConfig = {
     "reg.faute-commise",
     "tac.ind.pressing",
   ],
+  roster: [],
 };
 
 const fr = (n: number) => n.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
@@ -109,6 +112,40 @@ export function resultsFor(nodeId: string, config: StaffConfig): string[] {
 export function quickResults(nodeId: string, config: StaffConfig): string[] {
   const list = resultsFor(nodeId, config).filter((r) => normalize(r) !== "autre");
   return (list.length ? list : resultsFor(nodeId, config)).slice(0, 2);
+}
+
+export interface QuickCard {
+  id: string;
+  /** Sous-critères codables : si non vide, le critère n'affiche qu'un total. */
+  subs: string[];
+}
+
+/**
+ * Cartes de codage rapide pour un mode (individuel ou collectif). Un critère qui possède des
+ * sous-critères n'est pas cliquable : il affiche le total et un bouton par sous-critère.
+ */
+export function quickCards(shortcuts: string[], mode: Scope): QuickCard[] {
+  return [...new Set(shortcuts)]
+    .filter((id) => CRITERIA_INDEX.has(id) && scopeOf(id) === mode)
+    .map((id) => {
+      const node = CRITERIA_INDEX.get(id)!.node;
+      const subs = node.kind === "criterion" ? (node.children ?? []).map((ch) => ch.id) : [];
+      return { id, subs };
+    });
+}
+
+/** Effectif : un joueur par ligne, espaces superflus retirés, doublons ignorés. */
+export function parseRoster(text: string): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const line of text.split(/\r?\n/)) {
+    const name = line.trim().replace(/\s+/g, " ");
+    const key = normalize(name);
+    if (!name || seen.has(key)) continue;
+    seen.add(key);
+    out.push(name);
+  }
+  return out;
 }
 
 /** Minute/seconde de match proposées à partir de la position dans la vidéo. */
