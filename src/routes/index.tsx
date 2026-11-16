@@ -11,7 +11,7 @@ import { StaffSettings } from "@/components/match/StaffSettings";
 import { VideoPanel, type VideoSource } from "@/components/match/VideoPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CRITERIA_INDEX, expandableIds, getNode } from "@/lib/match/criteria";
+import { CRITERIA_INDEX, expandableIds, getNode, type Scope } from "@/lib/match/criteria";
 import {
   DEFAULT_CONFIG,
   actionsForNode,
@@ -57,10 +57,12 @@ function AnalysePage() {
   const [config, setConfig] = usePersisted<StaffConfig>(`${KEY}:config`, DEFAULT_CONFIG);
   const [videoMeta, setVideoMeta] = usePersisted<VideoSource | null>(`${KEY}:video`, null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const [quick, setQuick] = usePersisted<{ player: string; team: string; period: Period }>(
-    `${KEY}:quick`,
-    { player: "", team: "", period: "1MT" },
-  );
+  const [quick, setQuick] = usePersisted<{
+    player: string;
+    team: string;
+    period: Period;
+    mode: Scope;
+  }>(`${KEY}:quick`, { player: "", team: "", period: "1MT", mode: "individuel" });
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -95,9 +97,12 @@ function AnalysePage() {
 
   const actorsIndividual = useMemo(
     () => [
-      ...new Set(actions.filter((a) => scopeOf(a.nodeId) === "individuel").map((a) => a.actor)),
+      ...new Set([
+        ...(config.roster ?? []),
+        ...actions.filter((a) => scopeOf(a.nodeId) === "individuel").map((a) => a.actor),
+      ]),
     ],
-    [actions],
+    [actions, config.roster],
   );
   const actorsCollective = useMemo(
     () => [
@@ -309,13 +314,14 @@ function AnalysePage() {
         <QuickCode
           config={config}
           onConfigChange={setConfig}
+          mode={quick.mode}
+          onMode={(mode) => setQuick((q) => ({ ...q, mode }))}
           player={quick.player}
           onPlayer={(player) => setQuick((q) => ({ ...q, player }))}
           team={quick.team}
           onTeam={(team) => setQuick((q) => ({ ...q, team }))}
           period={quick.period}
           onPeriod={(period) => setQuick((q) => ({ ...q, period }))}
-          players={actorsIndividual}
           teams={actorsCollective}
           counts={counts}
           onCode={quickCode}
