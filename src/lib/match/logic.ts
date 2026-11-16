@@ -41,6 +41,8 @@ export interface StaffConfig {
   shortcuts: string[];
   /** Effectif saisi par le staff (un joueur par ligne). */
   roster: string[];
+  /** Version des boutons rapides par défaut déjà appliquée. */
+  shortcutsVersion?: number | undefined;
 }
 
 export const DEFAULT_CONFIG: StaffConfig = {
@@ -48,18 +50,70 @@ export const DEFAULT_CONFIG: StaffConfig = {
   preRoll: 5,
   evaluations: {},
   results: {},
-  shortcuts: [
-    "tec.passe",
-    "tec.controle",
-    "tec.dribble",
-    "tec.tir",
-    "tec.centre",
-    "tec.interception",
-    "reg.faute-commise",
-    "tac.ind.pressing",
-  ],
+  shortcuts: [] as string[],
   roster: [],
 };
+
+/** Ordre par défaut des boutons rapides ; les nouveaux ajouts sont repris chez le staff existant. */
+const SHORTCUTS_V1 = [
+  "tec.passe",
+  "tec.controle",
+  "tec.dribble",
+  "tec.tir",
+  "tec.centre",
+  "tec.interception",
+  "reg.faute-commise",
+  "tac.ind.pressing",
+];
+const SHORTCUTS_V2 = [
+  "tec.duel",
+  "reg.faute-subie",
+  "tac.ind.appel",
+  "tac.ind.soutien",
+  "tac.ind.pressing",
+  "tac.ind.repli",
+  "tac.ind.couverture",
+  "tac.ind.placement",
+  // Collectif : chaque bloc des 4 sous-parties.
+  ...[...CRITERIA_INDEX.values()]
+    .filter((e) => e.scope === "collectif" && e.node.kind === "criterion")
+    .map((e) => e.node.id),
+];
+export const SHORTCUTS_VERSION = 2;
+DEFAULT_CONFIG.shortcuts = [...new Set([...SHORTCUTS_V1, ...SHORTCUTS_V2])];
+DEFAULT_CONFIG.shortcutsVersion = SHORTCUTS_VERSION;
+
+/** Ajoute les nouveaux boutons par défaut et retire ceux dont le critère n'existe plus. */
+export function upgradeConfig(config: StaffConfig): StaffConfig {
+  const valid = config.shortcuts.filter((id) => CRITERIA_INDEX.has(id));
+  if (
+    (config.shortcutsVersion ?? 1) >= SHORTCUTS_VERSION &&
+    valid.length === config.shortcuts.length
+  )
+    return config;
+  const add = (config.shortcutsVersion ?? 1) < 2 ? SHORTCUTS_V2 : [];
+  return {
+    ...config,
+    shortcuts: [...new Set([...valid, ...add])],
+    shortcutsVersion: SHORTCUTS_VERSION,
+  };
+}
+
+/** Critères retirés par le staff : leurs actions déjà codées sont rattachées au nouveau critère. */
+const RENAMED_NODES: Record<string, string> = {
+  "reg.faute-commise.tacle": "reg.faute-commise",
+  "reg.faute-commise.poussette": "reg.faute-commise",
+  "reg.faute-commise.dangereux": "reg.faute-commise",
+  "tec.tete": "tec.duel.aerien",
+};
+
+export function migrateActions(actions: CodedAction[]): CodedAction[] {
+  if (!actions.some((a) => RENAMED_NODES[a.nodeId])) return actions;
+  return actions.map((a) => {
+    const to = RENAMED_NODES[a.nodeId];
+    return to ? { ...a, nodeId: to } : a;
+  });
+}
 
 const fr = (n: number) => n.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
 
@@ -112,6 +166,16 @@ export function resultsFor(nodeId: string, config: StaffConfig): string[] {
 export function quickResults(nodeId: string, config: StaffConfig): string[] {
   const list = resultsFor(nodeId, config).filter((r) => normalize(r) !== "autre");
   return (list.length ? list : resultsFor(nodeId, config)).slice(0, 2);
+}
+
+/** Sous-partie (A, B, C, D) du collectif à laquelle appartient un nœud. */
+export function sectionOf(nodeId: string): CriterionNode | undefined {
+  const path = CRITERIA_INDEX.get(nodeId)?.path ?? [];
+  for (const id of path) {
+    const node = CRITERIA_INDEX.get(id)?.node;
+    if (node?.kind === "section") return node;
+  }
+  return undefined;
 }
 
 export interface QuickCard {

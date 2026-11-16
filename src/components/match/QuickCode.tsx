@@ -35,6 +35,8 @@ import {
   quickResults,
   resultTone,
   scopeOf,
+  sectionOf,
+  type QuickCard,
   type Period,
   type StaffConfig,
 } from "@/lib/match/logic";
@@ -72,6 +74,26 @@ function catAttr(id: string) {
   return e?.scope === "collectif" ? "collectif" : (e?.categoryId ?? "root");
 }
 
+const TREE_ORDER = new Map([...CRITERIA_INDEX.keys()].map((id, i) => [id, i]));
+
+/** Cartes collectives regroupées par sous-partie (A, B, C, D), dans l'ordre de la carte. */
+function bySection(cards: QuickCard[]) {
+  const sorted = [...cards].sort(
+    (a, b) => (TREE_ORDER.get(a.id) ?? 0) - (TREE_ORDER.get(b.id) ?? 0),
+  );
+  const groups: { id: string; label: string; cards: QuickCard[] }[] = [];
+  for (const card of sorted) {
+    const sec = sectionOf(card.id);
+    const id = sec?.id ?? "autre";
+    let g = groups.find((x) => x.id === id);
+    if (!g) groups.push((g = { id, label: sec?.label ?? "Collectif", cards: [] }));
+    g.cards.push(card);
+  }
+  return groups;
+}
+
+const GRID = "grid grid-flow-row-dense auto-rows-[2.375rem] gap-1.5";
+
 function shortcutLabel(id: string, config: StaffConfig) {
   const node = getNode(id)!;
   const parent = node.kind === "sub" ? getNode(CRITERIA_INDEX.get(id)?.parentId ?? "") : null;
@@ -97,6 +119,66 @@ export function QuickCode(p: Props) {
         {r}
       </button>
     ));
+
+  const renderCard = ({ id, subs }: QuickCard) => {
+    const label = shortcutLabel(id, p.config);
+    if (subs.length) {
+      return (
+        <div
+          key={id}
+          data-cat={catAttr(id)}
+          style={{ gridRow: `span ${subs.length + 1}` }}
+          className="quick-card flex flex-col overflow-hidden rounded-md border bg-background/40"
+        >
+          <div className="flex flex-1 items-center gap-1.5 bg-muted/40 px-2">
+            <span className="size-2 shrink-0 rounded-full bg-branch" />
+            <span
+              className="min-w-0 flex-1 truncate text-xs font-bold uppercase tracking-wide"
+              title={label}
+            >
+              {label}
+            </span>
+            <span className="font-mono text-xs">
+              Total <strong>{p.counts.get(id) ?? 0}</strong>
+            </span>
+          </div>
+          {subs.map((sid) => {
+            const sub = nodeLabel(getNode(sid)!, p.config);
+            return (
+              <div key={sid} className="flex flex-1 items-center gap-1.5 border-t px-2 pl-5">
+                <span className="min-w-0 flex-1 truncate text-xs font-semibold" title={sub}>
+                  {sub}
+                </span>
+                <span className="font-mono text-[0.7rem] text-muted-foreground">
+                  {p.counts.get(sid) ?? 0}
+                </span>
+                {resultButtons(sid, `${label} · ${sub}`)}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+    return (
+      <div
+        key={id}
+        data-cat={catAttr(id)}
+        className="quick-card flex items-center gap-1.5 rounded-md border bg-background/40 px-2"
+      >
+        <span className="size-2 shrink-0 rounded-full bg-branch" />
+        <span
+          className="line-clamp-2 min-w-0 flex-1 text-xs font-semibold leading-tight"
+          title={label}
+        >
+          {label}
+        </span>
+        <span className="font-mono text-[0.7rem] text-muted-foreground">
+          {p.counts.get(id) ?? 0}
+        </span>
+        {resultButtons(id, label)}
+      </div>
+    );
+  };
 
   return (
     <section className="rounded-xl border bg-card shadow-panel">
@@ -167,7 +249,9 @@ export function QuickCode(p: Props) {
 
       {p.mode === "individuel" && (
         <div className="flex flex-wrap items-center gap-1.5 border-b px-2 py-1.5">
-          <span className="mr-1 text-xs font-semibold text-muted-foreground">Joueur en cours :</span>
+          <span className="mr-1 text-xs font-semibold text-muted-foreground">
+            Joueur en cours :
+          </span>
           {roster.length === 0 ? (
             <button
               type="button"
@@ -197,61 +281,31 @@ export function QuickCode(p: Props) {
           Aucun bouton {p.mode === "collectif" ? "collectif" : "individuel"}. Cliquez sur « Choisir
           les boutons ».
         </p>
-      ) : (
-        <div className="grid grid-flow-row-dense auto-rows-[2.375rem] gap-1.5 p-2 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5">
-          {cards.map(({ id, subs }) => {
-            const label = shortcutLabel(id, p.config);
-            if (subs.length) {
-              return (
-                <div
-                  key={id}
-                  data-cat={catAttr(id)}
-                  style={{ gridRow: `span ${subs.length + 1}` }}
-                  className="quick-card flex flex-col overflow-hidden rounded-md border bg-background/40"
-                >
-                  <div className="flex flex-1 items-center gap-1.5 bg-muted/40 px-2">
-                    <span className="size-2 shrink-0 rounded-full bg-branch" />
-                    <span className="min-w-0 flex-1 truncate text-xs font-bold uppercase tracking-wide" title={label}>
-                      {label}
-                    </span>
-                    <span className="font-mono text-xs">
-                      Total <strong>{p.counts.get(id) ?? 0}</strong>
-                    </span>
-                  </div>
-                  {subs.map((sid) => {
-                    const sub = nodeLabel(getNode(sid)!, p.config);
-                    return (
-                      <div key={sid} className="flex flex-1 items-center gap-1.5 border-t px-2 pl-5">
-                        <span className="min-w-0 flex-1 truncate text-xs font-semibold" title={sub}>
-                          {sub}
-                        </span>
-                        <span className="font-mono text-[0.7rem] text-muted-foreground">
-                          {p.counts.get(sid) ?? 0}
-                        </span>
-                        {resultButtons(sid, `${label} · ${sub}`)}
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            }
-            return (
+      ) : p.mode === "collectif" ? (
+        <div className="flex flex-wrap gap-3 p-2">
+          {bySection(cards).map((g) => (
+            <div
+              key={g.id}
+              className="min-w-0"
+              style={{
+                flex: `${Math.min(g.cards.length, 4)} 1 ${Math.min(g.cards.length, 4) * 14}rem`,
+              }}
+            >
+              <p className="mb-1 font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
+                {g.label}
+              </p>
               <div
-                key={id}
-                data-cat={catAttr(id)}
-                className="quick-card flex items-center gap-1.5 rounded-md border bg-background/40 px-2"
+                className={GRID}
+                style={{ gridTemplateColumns: "repeat(auto-fill, minmax(13.5rem, 1fr))" }}
               >
-                <span className="size-2 shrink-0 rounded-full bg-branch" />
-                <span className="line-clamp-2 min-w-0 flex-1 text-xs font-semibold leading-tight" title={label}>
-                  {label}
-                </span>
-                <span className="font-mono text-[0.7rem] text-muted-foreground">
-                  {p.counts.get(id) ?? 0}
-                </span>
-                {resultButtons(id, label)}
+                {g.cards.map(renderCard)}
               </div>
-            );
-          })}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={`${GRID} p-2 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5`}>
+          {cards.map(renderCard)}
         </div>
       )}
 

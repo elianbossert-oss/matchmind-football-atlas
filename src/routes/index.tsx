@@ -17,6 +17,8 @@ import {
   actionsForNode,
   countByNode,
   matchClock,
+  migrateActions,
+  upgradeConfig,
   nodeLabel,
   normalize,
   formatTimecode,
@@ -53,8 +55,23 @@ export const Route = createFileRoute("/")({
 const KEY = "analyse-match:v1";
 
 function AnalysePage() {
-  const [actions, setActions] = usePersisted<CodedAction[]>(`${KEY}:actions`, []);
-  const [config, setConfig] = usePersisted<StaffConfig>(`${KEY}:config`, DEFAULT_CONFIG);
+  const [actions, setActions, actionsLoaded] = usePersisted<CodedAction[]>(`${KEY}:actions`, []);
+  const [config, setConfig, configLoaded] = usePersisted<StaffConfig>(
+    `${KEY}:config`,
+    DEFAULT_CONFIG,
+  );
+
+  // Met à jour les données enregistrées après une modification des critères par le staff.
+  useEffect(() => {
+    if (!configLoaded) return;
+    const up = upgradeConfig(config);
+    if (up !== config) setConfig(up);
+  }, [configLoaded, config, setConfig]);
+  useEffect(() => {
+    if (!actionsLoaded) return;
+    const moved = migrateActions(actions);
+    if (moved !== actions) setActions(moved);
+  }, [actionsLoaded, actions, setActions]);
   const [videoMeta, setVideoMeta] = usePersisted<VideoSource | null>(`${KEY}:video`, null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [quick, setQuick] = usePersisted<{
@@ -241,7 +258,8 @@ function AnalysePage() {
       comment: "",
     });
     const node = getNode(nodeId);
-    const parent = node?.kind === "sub" ? getNode(CRITERIA_INDEX.get(nodeId)?.parentId ?? "") : null;
+    const parent =
+      node?.kind === "sub" ? getNode(CRITERIA_INDEX.get(nodeId)?.parentId ?? "") : null;
     const name = node ? nodeLabel(node, config) : "Action";
     toast.success(`${parent ? `${parent.label} · ${name}` : name} — ${result}`, {
       description: `${actor} · ${formatTimecode(videoTime)}`,

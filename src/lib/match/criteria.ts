@@ -52,11 +52,7 @@ export const CRITERIA_TREE: CriterionNode = {
       kind: "category",
       results: RES_OBTENU,
       children: [
-        c("reg.faute-commise", "Faute commise (selon la décision de l’arbitre)", {}, [
-          s("reg.faute-commise.tacle", "Tacle sanctionné"),
-          s("reg.faute-commise.poussette", "Poussette / tirage sanctionné"),
-          s("reg.faute-commise.dangereux", "Jeu dangereux sanctionné"),
-        ]),
+        c("reg.faute-commise", "Faute commise (selon la décision de l’arbitre)"),
         c("reg.faute-subie", "Faute subie (selon la décision de l’arbitre)"),
         c("reg.hors-jeu", "Hors-jeu signalé"),
         c("reg.carton", "Carton jaune / rouge", { results: ["Jaune", "Rouge", "Autre"] }),
@@ -135,12 +131,10 @@ export const CRITERIA_TREE: CriterionNode = {
             fail: "Il est intercepté, sort du terrain ou n’atteint pas la zone",
           },
         }),
-        c("tec.tete", "Jeu de tête", {
-          evaluation: {
-            success: "Le joueur dirige le ballon vers un partenaire ou la zone visée",
-            fail: "Le ballon est perdu ou envoyé hors de la cible",
-          },
-        }),
+        c("tec.duel", "Duel", {}, [
+          s("tec.duel.aerien", "Aérien"),
+          s("tec.duel.sol", "Au sol"),
+        ]),
         c("tec.interception", "Interception", {
           evaluation: {
             success: "Le joueur récupère ou dévie le ballon et empêche la progression adverse",
