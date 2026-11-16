@@ -55,10 +55,7 @@ export const Route = createFileRoute("/")({
 const KEY = "analyse-match:v1";
 
 function AnalysePage() {
-  const [actions, setActions, actionsLoaded] = usePersisted<CodedAction[]>(
-    `${KEY}:actions`,
-    [],
-  );
+  const [actions, setActions, actionsLoaded] = usePersisted<CodedAction[]>(`${KEY}:actions`, []);
   const [config, setConfig, configLoaded] = usePersisted<StaffConfig>(
     `${KEY}:config`,
     DEFAULT_CONFIG,
@@ -261,7 +258,8 @@ function AnalysePage() {
       comment: "",
     });
     const node = getNode(nodeId);
-    const parent = node?.kind === "sub" ? getNode(CRITERIA_INDEX.get(nodeId)?.parentId ?? "") : null;
+    const parent =
+      node?.kind === "sub" ? getNode(CRITERIA_INDEX.get(nodeId)?.parentId ?? "") : null;
     const name = node ? nodeLabel(node, config) : "Action";
     toast.success(`${parent ? `${parent.label} · ${name}` : name} — ${result}`, {
       description: `${actor} · ${formatTimecode(videoTime)}`,

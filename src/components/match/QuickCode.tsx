@@ -121,57 +121,63 @@ export function QuickCode(p: Props) {
     ));
 
   const renderCard = ({ id, subs }: QuickCard) => {
-            const label = shortcutLabel(id, p.config);
-            if (subs.length) {
-              return (
-                <div
-                  key={id}
-                  data-cat={catAttr(id)}
-                  style={{ gridRow: `span ${subs.length + 1}` }}
-                  className="quick-card flex flex-col overflow-hidden rounded-md border bg-background/40"
-                >
-                  <div className="flex flex-1 items-center gap-1.5 bg-muted/40 px-2">
-                    <span className="size-2 shrink-0 rounded-full bg-branch" />
-                    <span className="min-w-0 flex-1 truncate text-xs font-bold uppercase tracking-wide" title={label}>
-                      {label}
-                    </span>
-                    <span className="font-mono text-xs">
-                      Total <strong>{p.counts.get(id) ?? 0}</strong>
-                    </span>
-                  </div>
-                  {subs.map((sid) => {
-                    const sub = nodeLabel(getNode(sid)!, p.config);
-                    return (
-                      <div key={sid} className="flex flex-1 items-center gap-1.5 border-t px-2 pl-5">
-                        <span className="min-w-0 flex-1 truncate text-xs font-semibold" title={sub}>
-                          {sub}
-                        </span>
-                        <span className="font-mono text-[0.7rem] text-muted-foreground">
-                          {p.counts.get(sid) ?? 0}
-                        </span>
-                        {resultButtons(sid, `${label} · ${sub}`)}
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            }
+    const label = shortcutLabel(id, p.config);
+    if (subs.length) {
+      return (
+        <div
+          key={id}
+          data-cat={catAttr(id)}
+          style={{ gridRow: `span ${subs.length + 1}` }}
+          className="quick-card flex flex-col overflow-hidden rounded-md border bg-background/40"
+        >
+          <div className="flex flex-1 items-center gap-1.5 bg-muted/40 px-2">
+            <span className="size-2 shrink-0 rounded-full bg-branch" />
+            <span
+              className="min-w-0 flex-1 truncate text-xs font-bold uppercase tracking-wide"
+              title={label}
+            >
+              {label}
+            </span>
+            <span className="font-mono text-xs">
+              Total <strong>{p.counts.get(id) ?? 0}</strong>
+            </span>
+          </div>
+          {subs.map((sid) => {
+            const sub = nodeLabel(getNode(sid)!, p.config);
             return (
-              <div
-                key={id}
-                data-cat={catAttr(id)}
-                className="quick-card flex items-center gap-1.5 rounded-md border bg-background/40 px-2"
-              >
-                <span className="size-2 shrink-0 rounded-full bg-branch" />
-                <span className="line-clamp-2 min-w-0 flex-1 text-xs font-semibold leading-tight" title={label}>
-                  {label}
+              <div key={sid} className="flex flex-1 items-center gap-1.5 border-t px-2 pl-5">
+                <span className="min-w-0 flex-1 truncate text-xs font-semibold" title={sub}>
+                  {sub}
                 </span>
                 <span className="font-mono text-[0.7rem] text-muted-foreground">
-                  {p.counts.get(id) ?? 0}
+                  {p.counts.get(sid) ?? 0}
                 </span>
-                {resultButtons(id, label)}
+                {resultButtons(sid, `${label} · ${sub}`)}
               </div>
             );
+          })}
+        </div>
+      );
+    }
+    return (
+      <div
+        key={id}
+        data-cat={catAttr(id)}
+        className="quick-card flex items-center gap-1.5 rounded-md border bg-background/40 px-2"
+      >
+        <span className="size-2 shrink-0 rounded-full bg-branch" />
+        <span
+          className="line-clamp-2 min-w-0 flex-1 text-xs font-semibold leading-tight"
+          title={label}
+        >
+          {label}
+        </span>
+        <span className="font-mono text-[0.7rem] text-muted-foreground">
+          {p.counts.get(id) ?? 0}
+        </span>
+        {resultButtons(id, label)}
+      </div>
+    );
   };
 
   return (
@@ -243,7 +249,9 @@ export function QuickCode(p: Props) {
 
       {p.mode === "individuel" && (
         <div className="flex flex-wrap items-center gap-1.5 border-b px-2 py-1.5">
-          <span className="mr-1 text-xs font-semibold text-muted-foreground">Joueur en cours :</span>
+          <span className="mr-1 text-xs font-semibold text-muted-foreground">
+            Joueur en cours :
+          </span>
           {roster.length === 0 ? (
             <button
               type="button"
@@ -279,12 +287,17 @@ export function QuickCode(p: Props) {
             <div
               key={g.id}
               className="min-w-0"
-              style={{ flex: `${Math.min(g.cards.length, 4)} 1 ${Math.min(g.cards.length, 4) * 14}rem` }}
+              style={{
+                flex: `${Math.min(g.cards.length, 4)} 1 ${Math.min(g.cards.length, 4) * 14}rem`,
+              }}
             >
               <p className="mb-1 font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
                 {g.label}
               </p>
-              <div className={GRID} style={{ gridTemplateColumns: "repeat(auto-fill, minmax(13.5rem, 1fr))" }}>
+              <div
+                className={GRID}
+                style={{ gridTemplateColumns: "repeat(auto-fill, minmax(13.5rem, 1fr))" }}
+              >
                 {g.cards.map(renderCard)}
               </div>
             </div>

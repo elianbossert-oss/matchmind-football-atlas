@@ -86,7 +86,10 @@ DEFAULT_CONFIG.shortcutsVersion = SHORTCUTS_VERSION;
 /** Ajoute les nouveaux boutons par défaut et retire ceux dont le critère n'existe plus. */
 export function upgradeConfig(config: StaffConfig): StaffConfig {
   const valid = config.shortcuts.filter((id) => CRITERIA_INDEX.has(id));
-  if ((config.shortcutsVersion ?? 1) >= SHORTCUTS_VERSION && valid.length === config.shortcuts.length)
+  if (
+    (config.shortcutsVersion ?? 1) >= SHORTCUTS_VERSION &&
+    valid.length === config.shortcuts.length
+  )
     return config;
   const add = (config.shortcutsVersion ?? 1) < 2 ? SHORTCUTS_V2 : [];
   return {

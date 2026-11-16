@@ -19,7 +19,12 @@ import {
   type CodedAction,
 } from "./logic";
 
-const action = (id: string, nodeId: string, minute: number, videoTime = minute * 60): CodedAction => ({
+const action = (
+  id: string,
+  nodeId: string,
+  minute: number,
+  videoTime = minute * 60,
+): CodedAction => ({
   id,
   nodeId,
   actor: "10",
@@ -100,13 +105,20 @@ describe("filtrage des actions", () => {
 describe("paramètres staff", () => {
   it("les seuils physiques suivent la configuration", () => {
     const config = { ...DEFAULT_CONFIG, thresholds: { hi1: 21, hi2: 24.5, acc: 3 } };
-    expect(nodeLabel(CRITERIA_INDEX.get("phy.hi.s1")!.node, DEFAULT_CONFIG)).toBe("Seuil de 19,8 km/h");
+    expect(nodeLabel(CRITERIA_INDEX.get("phy.hi.s1")!.node, DEFAULT_CONFIG)).toBe(
+      "Seuil de 19,8 km/h",
+    );
     expect(nodeLabel(CRITERIA_INDEX.get("phy.hi.s1")!.node, config)).toBe("Seuil de 21 km/h");
     expect(nodeLabel(CRITERIA_INDEX.get("phy.hi.s2")!.node, config)).toBe("Seuil de 24,5 km/h");
-    expect(nodeLabel(CRITERIA_INDEX.get("phy.acc.s")!.node, config)).toBe("Seuil supérieur à 3 m/s²");
+    expect(nodeLabel(CRITERIA_INDEX.get("phy.acc.s")!.node, config)).toBe(
+      "Seuil supérieur à 3 m/s²",
+    );
   });
   it("la définition d'évaluation modifiée par le staff remplace celle par défaut", () => {
-    const config = { ...DEFAULT_CONFIG, evaluations: { "tec.passe": { success: "Passe vers l’avant" } } };
+    const config = {
+      ...DEFAULT_CONFIG,
+      evaluations: { "tec.passe": { success: "Passe vers l’avant" } },
+    };
     expect(evaluationFor("tec.passe.courte", config)?.success).toBe("Passe vers l’avant");
     expect(evaluationFor("tec.passe", DEFAULT_CONFIG)?.success).toMatch(/^Le partenaire contrôle/);
   });
@@ -129,7 +141,10 @@ describe("codage rapide", () => {
 
   it("sépare les boutons individuels et collectifs", () => {
     const ids = ["tec.passe", "col.def.pressing", "tac.ind.pressing"];
-    expect(quickCards(ids, "individuel").map((c) => c.id)).toEqual(["tec.passe", "tac.ind.pressing"]);
+    expect(quickCards(ids, "individuel").map((c) => c.id)).toEqual([
+      "tec.passe",
+      "tac.ind.pressing",
+    ]);
     expect(quickCards(ids, "collectif").map((c) => c.id)).toEqual(["col.def.pressing"]);
   });
 
@@ -165,7 +180,11 @@ describe("critères modifiés par le staff", () => {
   });
 
   it("les boutons existants gagnent Duel, Faute subie, la tactique individuelle et tout le collectif", () => {
-    const old = { ...DEFAULT_CONFIG, shortcuts: ["tec.passe", "tec.tete"], shortcutsVersion: undefined };
+    const old = {
+      ...DEFAULT_CONFIG,
+      shortcuts: ["tec.passe", "tec.tete"],
+      shortcutsVersion: undefined,
+    };
     const up = upgradeConfig(old).shortcuts;
     expect(up).not.toContain("tec.tete");
     expect(up).toEqual(
