@@ -168,17 +168,17 @@ describe("critères modifiés par le staff", () => {
     const old = { ...DEFAULT_CONFIG, shortcuts: ["tec.passe", "tec.tete"], shortcutsVersion: undefined };
     const up = upgradeConfig(old).shortcuts;
     expect(up).not.toContain("tec.tete");
-    for (const id of [
-      "tec.duel",
-      "reg.faute-commise",
-      "reg.faute-subie",
-      "tac.ind.appel",
-      "tac.ind.soutien",
-      "tac.ind.repli",
-      "tac.ind.couverture",
-      "tac.ind.placement",
-    ])
-      if (id !== "reg.faute-commise") expect(up).toContain(id);
+    expect(up).toEqual(
+      expect.arrayContaining([
+        "tec.duel",
+        "reg.faute-subie",
+        "tac.ind.appel",
+        "tac.ind.soutien",
+        "tac.ind.repli",
+        "tac.ind.couverture",
+        "tac.ind.placement",
+      ]),
+    );
     const sections = new Set(quickCards(up, "collectif").map((c) => sectionOf(c.id)?.label));
     expect([...sections]).toEqual([
       "A. Organisation offensive",
