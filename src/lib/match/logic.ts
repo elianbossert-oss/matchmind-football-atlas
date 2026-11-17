@@ -209,15 +209,17 @@ export interface QuickCard {
  */
 export function quickCards(shortcuts: string[], mode: Scope): QuickCard[] {
   const ids = new Set(shortcuts);
-  return [...ids]
-    .filter((id) => CRITERIA_INDEX.has(id) && scopeOf(id) === mode)
-    // Un sous-critère est déjà dans la carte de son critère : pas de doublon.
-    .filter((id) => !ids.has(CRITERIA_INDEX.get(id)?.parentId ?? ""))
-    .map((id) => {
-      const node = CRITERIA_INDEX.get(id)!.node;
-      const subs = node.kind === "criterion" ? (node.children ?? []).map((ch) => ch.id) : [];
-      return { id, subs };
-    });
+  return (
+    [...ids]
+      .filter((id) => CRITERIA_INDEX.has(id) && scopeOf(id) === mode)
+      // Un sous-critère est déjà dans la carte de son critère : pas de doublon.
+      .filter((id) => !ids.has(CRITERIA_INDEX.get(id)?.parentId ?? ""))
+      .map((id) => {
+        const node = CRITERIA_INDEX.get(id)!.node;
+        const subs = node.kind === "criterion" ? (node.children ?? []).map((ch) => ch.id) : [];
+        return { id, subs };
+      })
+  );
 }
 
 /** Effectif : un joueur par ligne, espaces superflus retirés, doublons ignorés. */

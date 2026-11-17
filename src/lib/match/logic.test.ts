@@ -224,19 +224,33 @@ describe("critères modifiés par le staff", () => {
   it("rend les boutons individuels à un staff qui n'en a plus aucun", () => {
     const stored = { ...DEFAULT_CONFIG, shortcuts: ["col.def.bloc"], shortcutsVersion: 2 };
     const up = upgradeConfig(stored).shortcuts;
-    expect(up).toEqual(expect.arrayContaining(["tec.passe", "tec.duel", "tac.ind.appel", "col.def.bloc"]));
+    expect(up).toEqual(
+      expect.arrayContaining(["tec.passe", "tec.duel", "tac.ind.appel", "col.def.bloc"]),
+    );
   });
 
   it("un sous-critère n'apparaît pas en double à côté de son critère", () => {
-    const ids = quickCards(["col.off.sortie", "col.off.sortie.courte", "col.def.bloc"], "collectif");
+    const ids = quickCards(
+      ["col.off.sortie", "col.off.sortie.courte", "col.def.bloc"],
+      "collectif",
+    );
     expect(ids.map((c) => c.id)).toEqual(["col.off.sortie", "col.def.bloc"]);
   });
 
   it("rend tous les blocs collectifs, dont D. Buts concédés, à un staff qui en avait retiré", () => {
-    const stored = { ...DEFAULT_CONFIG, shortcuts: ["tec.passe", "col.off.sortie"], shortcutsVersion: 3 };
+    const stored = {
+      ...DEFAULT_CONFIG,
+      shortcuts: ["tec.passe", "col.off.sortie"],
+      shortcutsVersion: 3,
+    };
     const up = upgradeConfig(stored).shortcuts;
     expect(up).toEqual(
-      expect.arrayContaining(["col.buts.perte", "col.buts.espace", "col.buts.recup", "col.def.bloc"]),
+      expect.arrayContaining([
+        "col.buts.perte",
+        "col.buts.espace",
+        "col.buts.recup",
+        "col.def.bloc",
+      ]),
     );
   });
 
@@ -255,10 +269,13 @@ describe("critères modifiés par le staff", () => {
   it("Circuits de passes préférentiels n'existe plus, ni ses actions codées", () => {
     expect(CRITERIA_INDEX.has("col.off.circuits")).toBe(false);
     expect(CRITERIA_INDEX.has("col.off.circuits.axe")).toBe(false);
-    const kept = migrateActions([action("a", "col.off.circuits.axe", 1), action("b", "tec.passe", 2)]);
+    const kept = migrateActions([
+      action("a", "col.off.circuits.axe", 1),
+      action("b", "tec.passe", 2),
+    ]);
     expect(kept.map((a) => a.id)).toEqual(["b"]);
-    expect(upgradeConfig({ ...DEFAULT_CONFIG, shortcuts: ["col.off.circuits"] }).shortcuts).not.toContain(
-      "col.off.circuits",
-    );
+    expect(
+      upgradeConfig({ ...DEFAULT_CONFIG, shortcuts: ["col.off.circuits"] }).shortcuts,
+    ).not.toContain("col.off.circuits");
   });
 });

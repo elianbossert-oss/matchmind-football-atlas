@@ -121,6 +121,8 @@ export function QuickCode(p: Props) {
       </button>
     ));
 
+  const isOneClick = (id: string) => quickResults(id, p.config).length === 0;
+
   const renderCard = ({ id, subs }: QuickCard) => {
     const label = shortcutLabel(id, p.config);
     if (subs.length) {
@@ -145,14 +147,32 @@ export function QuickCode(p: Props) {
           </div>
           {subs.map((sid) => {
             const sub = nodeLabel(getNode(sid)!, p.config);
-            return (
-              <div key={sid} className="flex flex-1 items-center gap-1.5 border-t px-2 pl-5">
+            const rowClass = "flex flex-1 items-center gap-1.5 border-t px-2 pl-5";
+            const inner = (
+              <>
                 <span className="min-w-0 flex-1 truncate text-xs font-semibold" title={sub}>
                   {sub}
                 </span>
                 <span className="font-mono text-[0.7rem] text-muted-foreground">
                   {p.counts.get(sid) ?? 0}
                 </span>
+              </>
+            );
+            if (isOneClick(sid))
+              return (
+                <button
+                  key={sid}
+                  type="button"
+                  className={`${rowClass} quick-tap text-left`}
+                  onClick={() => p.onCode(sid, "")}
+                  title={`Enregistrer : ${label} · ${sub}`}
+                >
+                  {inner}
+                </button>
+              );
+            return (
+              <div key={sid} className={rowClass}>
+                {inner}
                 {resultButtons(sid, `${label} · ${sub}`)}
               </div>
             );
@@ -160,12 +180,10 @@ export function QuickCode(p: Props) {
         </div>
       );
     }
-    return (
-      <div
-        key={id}
-        data-cat={catAttr(id)}
-        className="quick-card flex items-center gap-1.5 rounded-md border bg-background/40 px-2"
-      >
+    const cardClass =
+      "quick-card flex items-center gap-1.5 rounded-md border bg-background/40 px-2";
+    const inner = (
+      <>
         <span className="size-2 shrink-0 rounded-full bg-branch" />
         <span
           className="line-clamp-2 min-w-0 flex-1 text-xs font-semibold leading-tight"
@@ -176,6 +194,24 @@ export function QuickCode(p: Props) {
         <span className="font-mono text-[0.7rem] text-muted-foreground">
           {p.counts.get(id) ?? 0}
         </span>
+      </>
+    );
+    if (isOneClick(id))
+      return (
+        <button
+          key={id}
+          type="button"
+          data-cat={catAttr(id)}
+          className={`${cardClass} quick-tap text-left`}
+          onClick={() => p.onCode(id, "")}
+          title={`Enregistrer : ${label}`}
+        >
+          {inner}
+        </button>
+      );
+    return (
+      <div key={id} data-cat={catAttr(id)} className={cardClass}>
+        {inner}
         {resultButtons(id, label)}
       </div>
     );
@@ -280,8 +316,8 @@ export function QuickCode(p: Props) {
       {cards.length === 0 ? (
         <div className="flex flex-col items-center gap-2 p-4 text-center text-sm text-muted-foreground">
           <p>
-            Aucun bouton {p.mode === "collectif" ? "collectif" : "individuel"}. Cliquez sur
-            « Choisir les boutons » ou :
+            Aucun bouton {p.mode === "collectif" ? "collectif" : "individuel"}. Cliquez sur «
+            Choisir les boutons » ou :
           </p>
           <Button
             size="sm"

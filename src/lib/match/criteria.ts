@@ -133,10 +133,7 @@ export const CRITERIA_TREE: CriterionNode = {
             fail: "Il est intercepté, sort du terrain ou n’atteint pas la zone",
           },
         }),
-        c("tec.duel", "Duel", {}, [
-          s("tec.duel.aerien", "Aérien"),
-          s("tec.duel.sol", "Au sol"),
-        ]),
+        c("tec.duel", "Duel", {}, [s("tec.duel.aerien", "Aérien"), s("tec.duel.sol", "Au sol")]),
         c("tec.interception", "Interception", {
           evaluation: {
             success: "Le joueur récupère ou dévie le ballon et empêche la progression adverse",

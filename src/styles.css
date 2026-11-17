@@ -511,6 +511,18 @@
   border-color: var(--primary);
   color: var(--primary-foreground);
 }
+.quick-tap {
+  cursor: pointer;
+  transition:
+    transform 100ms,
+    background-color 150ms;
+}
+.quick-tap:hover {
+  background: color-mix(in oklab, var(--branch) 18%, transparent);
+}
+.quick-tap:active {
+  transform: scale(0.97);
+}
 .quick-result:active {
   transform: scale(0.94);
 }

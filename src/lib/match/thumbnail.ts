@@ -1,5 +1,9 @@
 /** Capture une image de la vidéo à l'instant donné (via un lecteur caché). */
-export function captureFrame(src: string, time: number, remote: boolean): Promise<string | undefined> {
+export function captureFrame(
+  src: string,
+  time: number,
+  remote: boolean,
+): Promise<string | undefined> {
   return new Promise((resolve) => {
     if (typeof document === "undefined" || !src) return resolve(undefined);
     const video = document.createElement("video");

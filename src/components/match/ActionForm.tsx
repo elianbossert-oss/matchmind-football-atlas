@@ -57,7 +57,9 @@ interface Props {
   actorsCollective: string[];
   lastPeriod: Period;
   getCurrentTime: () => number | null;
-  onSave: (a: Omit<CodedAction, "id" | "createdAt" | "thumbnail"> & { id?: string | undefined }) => void;
+  onSave: (
+    a: Omit<CodedAction, "id" | "createdAt" | "thumbnail"> & { id?: string | undefined },
+  ) => void;
 }
 
 const NONE = "__none";
@@ -77,8 +79,7 @@ function initialState(draft: ActionDraft | null, lastPeriod: Period) {
   return {
     category: (entry?.categoryId ?? "") as CategoryId | "",
     tab: (group === "tac.collectif" ? "tac.collectif" : "tac.individuel") as
-      | "tac.individuel"
-      | "tac.collectif",
+      "tac.individuel" | "tac.collectif",
     criterion,
     sub,
     actor: draft?.action?.actor ?? "",
@@ -141,7 +142,8 @@ export function ActionForm({
     const minute = Number(f.minute);
     const second = Number(f.second);
     if (!f.criterion) return setError("Choisissez un critère.");
-    if (!f.actor.trim()) return setError(isCollective ? "Indiquez l’équipe." : "Indiquez le joueur.");
+    if (!f.actor.trim())
+      return setError(isCollective ? "Indiquez l’équipe." : "Indiquez le joueur.");
     if (results.length && !f.result) return setError("Choisissez un résultat.");
     if (!Number.isInteger(minute) || minute < 0 || minute > 150)
       return setError("Minute invalide (0 à 150).");
@@ -179,12 +181,20 @@ export function ActionForm({
             <Select
               value={f.category}
               onValueChange={(v) =>
-                setF((p) => ({ ...p, category: v as CategoryId, criterion: "", sub: NONE, result: "" }))
+                setF((p) => ({
+                  ...p,
+                  category: v as CategoryId,
+                  criterion: "",
+                  sub: NONE,
+                  result: "",
+                }))
               }
             >
               <SelectTrigger>
                 <SelectValue
-                  placeholder={targetId && !results.length ? "Aucun résultat à choisir" : "Choisir…"}
+                  placeholder={
+                    targetId && !results.length ? "Aucun résultat à choisir" : "Choisir…"
+                  }
                 />
               </SelectTrigger>
               <SelectContent>
@@ -303,7 +313,8 @@ export function ActionForm({
             <Select
               value={f.result}
               disabled={!targetId || !results.length}
-              onValueChange={(v) => set("result", v)}>
+              onValueChange={(v) => set("result", v)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Choisir…" />
               </SelectTrigger>

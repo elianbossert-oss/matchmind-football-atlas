@@ -86,9 +86,7 @@ export function ResultsPanel({
             {node ? nodeLabel(node, config) : "—"}
           </h2>
           <div className="shrink-0 text-right">
-            <p className="text-branch font-mono text-2xl leading-none">
-              {actions.length}
-            </p>
+            <p className="text-branch font-mono text-2xl leading-none">{actions.length}</p>
             <p className="text-[0.65rem] uppercase tracking-wider text-muted-foreground">
               occurrence{actions.length > 1 ? "s" : ""}
             </p>
