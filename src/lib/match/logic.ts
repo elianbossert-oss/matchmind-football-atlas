@@ -81,7 +81,7 @@ const SHORTCUTS_V2 = [
 ];
 export const SHORTCUTS_VERSION = 2;
 DEFAULT_CONFIG.shortcuts = [...new Set([...SHORTCUTS_V1, ...SHORTCUTS_V2])];
-DEFAULT_CONFIG.shortcutsVersion = SHORTCUTS_VERSION;
+// Pas de version dans les valeurs par défaut : elles sont fusionnées avec les réglages enregistrés.
 
 /** Ajoute les nouveaux boutons par défaut et retire ceux dont le critère n'existe plus. */
 export function upgradeConfig(config: StaffConfig): StaffConfig {
