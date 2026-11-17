@@ -189,9 +189,11 @@ export function ResultsPanel({
                           {pad(a.minute)}′{pad(a.second)}″
                         </span>
                         <span className="text-xs text-muted-foreground">{period?.short}</span>
-                        <span className="result-chip" data-tone={resultTone(a.result)}>
-                          {a.result}
-                        </span>
+                        {a.result && (
+                          <span className="result-chip" data-tone={resultTone(a.result)}>
+                            {a.result}
+                          </span>
+                        )}
                       </div>
                       <p className="flex items-center gap-1.5 truncate text-sm font-medium">
                         <span className="scope-chip" data-scope={scope}>

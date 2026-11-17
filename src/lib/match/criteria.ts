@@ -23,6 +23,8 @@ export interface CriterionNode {
   /** Résultats proposés dans le formulaire (hérités par les descendants). */
   results?: string[] | undefined;
   children?: CriterionNode[] | undefined;
+  /** Bouton à un seul clic, sans résultat à choisir (hérité par les sous-critères). */
+  oneClick?: boolean | undefined;
 }
 
 const RES_REUSSI = ["Réussi", "Raté", "Autre"];
@@ -226,12 +228,7 @@ export const CRITERIA_TREE: CriterionNode = {
                   s("col.off.sortie.longue", "Longue"),
                   s("col.off.sortie.mixte", "Mixte"),
                 ]),
-                c("col.off.perte-relance", "Perte de balle à la relance"),
-                c("col.off.circuits", "Circuits de passes préférentiels", {}, [
-                  s("col.off.circuits.gauche", "Côté gauche"),
-                  s("col.off.circuits.droit", "Côté droit"),
-                  s("col.off.circuits.axe", "Axe"),
-                ]),
+                c("col.off.perte-relance", "Perte de balle à la relance", { oneClick: true }),
                 c("col.off.progression", "Progression", {}, [
                   s("col.off.progression.couloirs", "Jeu dans les couloirs"),
                   s("col.off.progression.axe", "Jeu dans l’axe"),
@@ -256,14 +253,14 @@ export const CRITERIA_TREE: CriterionNode = {
               label: "B. Organisation défensive",
               kind: "section",
               children: [
-                c("col.def.bloc", "Bloc équipe", {}, [
+                c("col.def.bloc", "Bloc équipe", { oneClick: true }, [
                   s("col.def.bloc.haut", "Haut"),
                   s("col.def.bloc.median", "Médian"),
                   s("col.def.bloc.bas", "Bas"),
                   s("col.def.bloc.compact", "Compact"),
                   s("col.def.bloc.etire", "Étiré"),
                 ]),
-                c("col.def.pressing", "Pressing collectif", {}, [
+                c("col.def.pressing", "Pressing collectif", { oneClick: true }, [
                   s("col.def.pressing.declencheur", "Déclencheur du pressing"),
                   s("col.def.pressing.recup", "Récupération"),
                   s("col.def.pressing.contourne", "Pressing contourné"),

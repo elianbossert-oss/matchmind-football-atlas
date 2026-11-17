@@ -261,7 +261,7 @@ function AnalysePage() {
     const parent =
       node?.kind === "sub" ? getNode(CRITERIA_INDEX.get(nodeId)?.parentId ?? "") : null;
     const name = node ? nodeLabel(node, config) : "Action";
-    toast.success(`${parent ? `${parent.label} · ${name}` : name} — ${result}`, {
+    toast.success(`${parent ? `${parent.label} · ${name}` : name}${result ? ` — ${result}` : ""}`, {
       description: `${actor} · ${formatTimecode(videoTime)}`,
       duration: 4000,
       action: {
