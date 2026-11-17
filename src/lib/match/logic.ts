@@ -79,7 +79,7 @@ const SHORTCUTS_V2 = [
     .filter((e) => e.scope === "collectif" && e.node.kind === "criterion")
     .map((e) => e.node.id),
 ];
-export const SHORTCUTS_VERSION = 3;
+export const SHORTCUTS_VERSION = 4;
 DEFAULT_CONFIG.shortcuts = [...new Set([...SHORTCUTS_V1, ...SHORTCUTS_V2])];
 // Pas de version dans les valeurs par défaut : elles sont fusionnées avec les réglages enregistrés.
 
@@ -101,9 +101,11 @@ export function upgradeConfig(config: StaffConfig): StaffConfig {
   // v3 : rend les boutons individuels par défaut à qui n'en a plus aucun.
   const noIndividual = !valid.some((id) => scopeOf(id) === "individuel");
   const restore = v < 3 && noIndividual ? defaultShortcuts("individuel") : [];
+  // v4 : tous les blocs des 4 sous-parties du collectif (dont D. Buts concédés).
+  const collectif = v < 4 ? defaultShortcuts("collectif") : [];
   return {
     ...config,
-    shortcuts: [...new Set([...restore, ...valid, ...add])],
+    shortcuts: [...new Set([...restore, ...valid, ...add, ...collectif])],
     shortcutsVersion: SHORTCUTS_VERSION,
   };
 }
@@ -198,8 +200,11 @@ export interface QuickCard {
  * sous-critères n'est pas cliquable : il affiche le total et un bouton par sous-critère.
  */
 export function quickCards(shortcuts: string[], mode: Scope): QuickCard[] {
-  return [...new Set(shortcuts)]
+  const ids = new Set(shortcuts);
+  return [...ids]
     .filter((id) => CRITERIA_INDEX.has(id) && scopeOf(id) === mode)
+    // Un sous-critère est déjà dans la carte de son critère : pas de doublon.
+    .filter((id) => !ids.has(CRITERIA_INDEX.get(id)?.parentId ?? ""))
     .map((id) => {
       const node = CRITERIA_INDEX.get(id)!.node;
       const subs = node.kind === "criterion" ? (node.children ?? []).map((ch) => ch.id) : [];
