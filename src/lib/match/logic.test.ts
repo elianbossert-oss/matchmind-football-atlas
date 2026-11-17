@@ -226,4 +226,17 @@ describe("critères modifiés par le staff", () => {
     const up = upgradeConfig(stored).shortcuts;
     expect(up).toEqual(expect.arrayContaining(["tec.passe", "tec.duel", "tac.ind.appel", "col.def.bloc"]));
   });
+
+  it("un sous-critère n'apparaît pas en double à côté de son critère", () => {
+    const ids = quickCards(["col.off.sortie", "col.off.sortie.courte", "col.off.circuits"], "collectif");
+    expect(ids.map((c) => c.id)).toEqual(["col.off.sortie", "col.off.circuits"]);
+  });
+
+  it("rend tous les blocs collectifs, dont D. Buts concédés, à un staff qui en avait retiré", () => {
+    const stored = { ...DEFAULT_CONFIG, shortcuts: ["tec.passe", "col.off.sortie"], shortcutsVersion: 3 };
+    const up = upgradeConfig(stored).shortcuts;
+    expect(up).toEqual(
+      expect.arrayContaining(["col.buts.perte", "col.buts.espace", "col.buts.recup", "col.def.bloc"]),
+    );
+  });
 });
