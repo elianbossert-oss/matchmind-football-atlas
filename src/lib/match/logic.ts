@@ -79,9 +79,14 @@ const SHORTCUTS_V2 = [
     .filter((e) => e.scope === "collectif" && e.node.kind === "criterion")
     .map((e) => e.node.id),
 ];
-export const SHORTCUTS_VERSION = 2;
+export const SHORTCUTS_VERSION = 3;
 DEFAULT_CONFIG.shortcuts = [...new Set([...SHORTCUTS_V1, ...SHORTCUTS_V2])];
 // Pas de version dans les valeurs par défaut : elles sont fusionnées avec les réglages enregistrés.
+
+/** Boutons par défaut d'un mode (individuel ou collectif). */
+export function defaultShortcuts(mode: Scope): string[] {
+  return DEFAULT_CONFIG.shortcuts.filter((id) => scopeOf(id) === mode);
+}
 
 /** Ajoute les nouveaux boutons par défaut et retire ceux dont le critère n'existe plus. */
 export function upgradeConfig(config: StaffConfig): StaffConfig {
@@ -91,10 +96,14 @@ export function upgradeConfig(config: StaffConfig): StaffConfig {
     valid.length === config.shortcuts.length
   )
     return config;
-  const add = (config.shortcutsVersion ?? 1) < 2 ? SHORTCUTS_V2 : [];
+  const v = config.shortcutsVersion ?? 1;
+  const add = v < 2 ? SHORTCUTS_V2 : [];
+  // v3 : rend les boutons individuels par défaut à qui n'en a plus aucun.
+  const noIndividual = !valid.some((id) => scopeOf(id) === "individuel");
+  const restore = v < 3 && noIndividual ? defaultShortcuts("individuel") : [];
   return {
     ...config,
-    shortcuts: [...new Set([...valid, ...add])],
+    shortcuts: [...new Set([...restore, ...valid, ...add])],
     shortcutsVersion: SHORTCUTS_VERSION,
   };
 }
