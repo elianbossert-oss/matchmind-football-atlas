@@ -9,3 +9,5 @@
 - [x] Passe (et tout critère à sous-critères) : total non cliquable + boutons Courte / Longue / En profondeur
 - [x] Effectif du staff et sélection du joueur en cours en un clic
 - [x] Bascule Individuel / Collectif des boutons rapides
+- [x] Duel (Aérien / Au sol) en Technique, Jeu de tête retiré, Faute commise sans sous-critères
+- [x] Boutons : Faute subie, Duel, toute la tactique individuelle, collectif rangé par sous-parties A–D
