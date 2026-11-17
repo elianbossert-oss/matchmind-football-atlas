@@ -212,4 +212,12 @@ describe("critères modifiés par le staff", () => {
     const removed = { ...once, shortcuts: once.shortcuts.filter((id) => id !== "tec.duel") };
     expect(upgradeConfig(removed).shortcuts).not.toContain("tec.duel");
   });
+
+  it("des réglages enregistrés avant la mise à jour reçoivent les nouveaux boutons", () => {
+    const stored = { shortcuts: ["tec.passe", "reg.faute-commise"] };
+    const merged = { ...DEFAULT_CONFIG, ...stored };
+    expect(upgradeConfig(merged).shortcuts).toEqual(
+      expect.arrayContaining(["tec.duel", "tac.ind.appel", "col.def.bloc", "col.buts.recup"]),
+    );
+  });
 });
