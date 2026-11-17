@@ -220,4 +220,10 @@ describe("critères modifiés par le staff", () => {
       expect.arrayContaining(["tec.duel", "tac.ind.appel", "col.def.bloc", "col.buts.recup"]),
     );
   });
+
+  it("rend les boutons individuels à un staff qui n'en a plus aucun", () => {
+    const stored = { ...DEFAULT_CONFIG, shortcuts: ["col.def.bloc"], shortcutsVersion: 2 };
+    const up = upgradeConfig(stored).shortcuts;
+    expect(up).toEqual(expect.arrayContaining(["tec.passe", "tec.duel", "tac.ind.appel", "col.def.bloc"]));
+  });
 });

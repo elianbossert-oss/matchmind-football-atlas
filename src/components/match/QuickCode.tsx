@@ -29,6 +29,7 @@ import {
 } from "@/lib/match/criteria";
 import {
   PERIODS,
+  defaultShortcuts,
   nodeLabel,
   parseRoster,
   quickCards,
@@ -277,10 +278,24 @@ export function QuickCode(p: Props) {
       )}
 
       {cards.length === 0 ? (
-        <p className="p-4 text-center text-sm text-muted-foreground">
-          Aucun bouton {p.mode === "collectif" ? "collectif" : "individuel"}. Cliquez sur « Choisir
-          les boutons ».
-        </p>
+        <div className="flex flex-col items-center gap-2 p-4 text-center text-sm text-muted-foreground">
+          <p>
+            Aucun bouton {p.mode === "collectif" ? "collectif" : "individuel"}. Cliquez sur
+            « Choisir les boutons » ou :
+          </p>
+          <Button
+            size="sm"
+            variant="soft"
+            onClick={() =>
+              p.onConfigChange({
+                ...p.config,
+                shortcuts: [...new Set([...p.config.shortcuts, ...defaultShortcuts(p.mode)])],
+              })
+            }
+          >
+            Remettre les boutons par défaut
+          </Button>
+        </div>
       ) : p.mode === "collectif" ? (
         <div className="flex flex-wrap gap-3 p-2">
           {bySection(cards).map((g) => (
