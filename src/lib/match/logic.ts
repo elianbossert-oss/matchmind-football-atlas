@@ -118,12 +118,18 @@ const RENAMED_NODES: Record<string, string> = {
   "tec.tete": "tec.duel.aerien",
 };
 
+/** Critères supprimés par le staff (avec leurs sous-critères). */
+const REMOVED_NODES = ["col.off.circuits"];
+const isRemoved = (id: string) => REMOVED_NODES.some((r) => id === r || id.startsWith(`${r}.`));
+
 export function migrateActions(actions: CodedAction[]): CodedAction[] {
-  if (!actions.some((a) => RENAMED_NODES[a.nodeId])) return actions;
-  return actions.map((a) => {
-    const to = RENAMED_NODES[a.nodeId];
-    return to ? { ...a, nodeId: to } : a;
-  });
+  if (!actions.some((a) => RENAMED_NODES[a.nodeId] || isRemoved(a.nodeId))) return actions;
+  return actions
+    .filter((a) => !isRemoved(a.nodeId))
+    .map((a) => {
+      const to = RENAMED_NODES[a.nodeId];
+      return to ? { ...a, nodeId: to } : a;
+    });
 }
 
 const fr = (n: number) => n.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
@@ -167,6 +173,7 @@ export function resultsFor(nodeId: string, config: StaffConfig): string[] {
     if (!entry) break;
     const override = config.results[id];
     if (override?.length) return override;
+    if (entry.node.oneClick) return [];
     if (entry.node.results?.length) return entry.node.results;
     id = entry.parentId;
   }
@@ -175,6 +182,7 @@ export function resultsFor(nodeId: string, config: StaffConfig): string[] {
 
 /** Résultats proposés sur un bouton rapide : au plus deux, sans « Autre ». */
 export function quickResults(nodeId: string, config: StaffConfig): string[] {
+  if (!resultsFor(nodeId, config).length) return [];
   const list = resultsFor(nodeId, config).filter((r) => normalize(r) !== "autre");
   return (list.length ? list : resultsFor(nodeId, config)).slice(0, 2);
 }
@@ -201,15 +209,17 @@ export interface QuickCard {
  */
 export function quickCards(shortcuts: string[], mode: Scope): QuickCard[] {
   const ids = new Set(shortcuts);
-  return [...ids]
-    .filter((id) => CRITERIA_INDEX.has(id) && scopeOf(id) === mode)
-    // Un sous-critère est déjà dans la carte de son critère : pas de doublon.
-    .filter((id) => !ids.has(CRITERIA_INDEX.get(id)?.parentId ?? ""))
-    .map((id) => {
-      const node = CRITERIA_INDEX.get(id)!.node;
-      const subs = node.kind === "criterion" ? (node.children ?? []).map((ch) => ch.id) : [];
-      return { id, subs };
-    });
+  return (
+    [...ids]
+      .filter((id) => CRITERIA_INDEX.has(id) && scopeOf(id) === mode)
+      // Un sous-critère est déjà dans la carte de son critère : pas de doublon.
+      .filter((id) => !ids.has(CRITERIA_INDEX.get(id)?.parentId ?? ""))
+      .map((id) => {
+        const node = CRITERIA_INDEX.get(id)!.node;
+        const subs = node.kind === "criterion" ? (node.children ?? []).map((ch) => ch.id) : [];
+        return { id, subs };
+      })
+  );
 }
 
 /** Effectif : un joueur par ligne, espaces superflus retirés, doublons ignorés. */

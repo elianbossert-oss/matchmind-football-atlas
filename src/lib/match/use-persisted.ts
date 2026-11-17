@@ -13,7 +13,9 @@ export function usePersisted<T>(key: string, initial: T) {
         const parsed = JSON.parse(raw);
         const base = initialRef.current;
         setValue(
-          base && typeof base === "object" && !Array.isArray(base) ? { ...base, ...parsed } : parsed,
+          base && typeof base === "object" && !Array.isArray(base)
+            ? { ...base, ...parsed }
+            : parsed,
         );
       }
     } catch {

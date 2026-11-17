@@ -11,3 +11,4 @@
 - [x] Bascule Individuel / Collectif des boutons rapides
 - [x] Duel (Aérien / Au sol) en Technique, Jeu de tête retiré, Faute commise sans sous-critères
 - [x] Boutons : Faute subie, Duel, toute la tactique individuelle, collectif rangé par sous-parties A–D
+- [x] Un seul clic pour Perte de balle à la relance, Bloc équipe, Pressing collectif ; Circuits de passes supprimé

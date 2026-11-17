@@ -86,9 +86,7 @@ export function ResultsPanel({
             {node ? nodeLabel(node, config) : "—"}
           </h2>
           <div className="shrink-0 text-right">
-            <p className="text-branch font-mono text-2xl leading-none">
-              {actions.length}
-            </p>
+            <p className="text-branch font-mono text-2xl leading-none">{actions.length}</p>
             <p className="text-[0.65rem] uppercase tracking-wider text-muted-foreground">
               occurrence{actions.length > 1 ? "s" : ""}
             </p>
@@ -189,9 +187,11 @@ export function ResultsPanel({
                           {pad(a.minute)}′{pad(a.second)}″
                         </span>
                         <span className="text-xs text-muted-foreground">{period?.short}</span>
-                        <span className="result-chip" data-tone={resultTone(a.result)}>
-                          {a.result}
-                        </span>
+                        {a.result && (
+                          <span className="result-chip" data-tone={resultTone(a.result)}>
+                            {a.result}
+                          </span>
+                        )}
                       </div>
                       <p className="flex items-center gap-1.5 truncate text-sm font-medium">
                         <span className="scope-chip" data-scope={scope}>

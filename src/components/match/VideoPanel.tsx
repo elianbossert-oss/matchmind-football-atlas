@@ -3,11 +3,7 @@ import { useRef, useState, type RefObject } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export interface VideoSource {
   kind: "file" | "url";
@@ -56,7 +52,11 @@ export function VideoPanel({ videoRef, source, onSource, preRoll }: Props) {
             onSubmit={(e) => {
               e.preventDefault();
               if (!link.trim()) return;
-              onSource({ kind: "url", url: link.trim(), name: link.trim().split("/").pop() || "Vidéo" });
+              onSource({
+                kind: "url",
+                url: link.trim(),
+                name: link.trim().split("/").pop() || "Vidéo",
+              });
               setOpen(false);
             }}
           >

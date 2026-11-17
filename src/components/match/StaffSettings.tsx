@@ -19,7 +19,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { criteriaOfGroup, getNode, type CodingGroupId, type Evaluation } from "@/lib/match/criteria";
+import {
+  criteriaOfGroup,
+  getNode,
+  type CodingGroupId,
+  type Evaluation,
+} from "@/lib/match/criteria";
 import { DEFAULT_CONFIG, resultsFor, type StaffConfig } from "@/lib/match/logic";
 
 const GROUPS: { id: CodingGroupId; label: string }[] = [
@@ -50,10 +55,15 @@ export function StaffSettings({ open, onOpenChange, config, onSave }: Props) {
   }, [open, config]);
 
   const evalOf = (id: string): Evaluation =>
-    Object.hasOwn(draft.evaluations, id) ? (draft.evaluations[id] ?? {}) : (getNode(id)?.evaluation ?? {});
+    Object.hasOwn(draft.evaluations, id)
+      ? (draft.evaluations[id] ?? {})
+      : (getNode(id)?.evaluation ?? {});
 
   const setEval = (id: string, key: keyof Evaluation, value: string) =>
-    setDraft((d) => ({ ...d, evaluations: { ...d.evaluations, [id]: { ...evalOf(id), [key]: value } } }));
+    setDraft((d) => ({
+      ...d,
+      evaluations: { ...d.evaluations, [id]: { ...evalOf(id), [key]: value } },
+    }));
 
   const setThreshold = (k: keyof StaffConfig["thresholds"], v: string) => {
     const n = Number(v.replace(",", "."));
@@ -63,7 +73,10 @@ export function StaffSettings({ open, onOpenChange, config, onSave }: Props) {
   const save = () => {
     const results = { ...draft.results };
     for (const [id, text] of Object.entries(resultsText)) {
-      const list = text.split(",").map((s) => s.trim()).filter(Boolean);
+      const list = text
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
       if (list.length) results[id] = list;
       else delete results[id];
     }
@@ -136,10 +149,15 @@ export function StaffSettings({ open, onOpenChange, config, onSave }: Props) {
                     {criteriaOfGroup(g.id).map((c) => {
                       const ev = evalOf(c.id);
                       return (
-                        <div key={c.id} className="space-y-2 rounded-lg border bg-background/40 p-3">
+                        <div
+                          key={c.id}
+                          className="space-y-2 rounded-lg border bg-background/40 p-3"
+                        >
                           <p className="font-medium">
                             {c.section && (
-                              <span className="mr-1 text-xs text-muted-foreground">{c.section} ›</span>
+                              <span className="mr-1 text-xs text-muted-foreground">
+                                {c.section} ›
+                              </span>
                             )}
                             {c.label}
                           </p>
