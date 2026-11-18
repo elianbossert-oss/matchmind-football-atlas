@@ -128,7 +128,7 @@ describe("codage rapide", () => {
   it("propose au plus deux résultats, sans « Autre »", () => {
     expect(quickResults("tec.passe", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
     expect(quickResults("reg.carton", DEFAULT_CONFIG)).toEqual(["Jaune", "Rouge"]);
-    expect(quickResults("tac.ind.placement", DEFAULT_CONFIG)).toEqual(["Conforme", "Non conforme"]);
+    expect(quickResults("tac.ind.pressing", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
   });
 });
 
@@ -277,5 +277,39 @@ describe("critères modifiés par le staff", () => {
     expect(
       upgradeConfig({ ...DEFAULT_CONFIG, shortcuts: ["col.off.circuits"] }).shortcuts,
     ).not.toContain("col.off.circuits");
+  });
+
+  it("Parties C et D : un seul clic, sans Réussi/Raté ni Concédé", () => {
+    for (const id of [
+      "col.trans.repli",
+      "col.trans.contre-pressing",
+      "col.trans.contre-attaque",
+      "col.buts.perte",
+      "col.buts.espace",
+      "col.buts.centre",
+      "col.buts.profondeur",
+      "col.buts.combine",
+      "col.buts.recup",
+    ])
+      expect(quickResults(id, DEFAULT_CONFIG)).toEqual([]);
+  });
+
+  it("Points individuels en bouton unique, Pressing garde Réussi/Raté", () => {
+    for (const id of [
+      "reg.faute-subie",
+      "reg.faute-commise",
+      "tac.ind.appel",
+      "tac.ind.soutien",
+      "tac.ind.couverture",
+      "tac.ind.repli",
+      "tac.ind.placement",
+    ])
+      expect(quickResults(id, DEFAULT_CONFIG)).toEqual([]);
+    expect(quickResults("tac.ind.pressing", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
+  });
+
+  it("Progression, Création d'occasions et Transitions offensives gardent Réussi/Raté", () => {
+    expect(quickResults("col.off.progression.axe", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
+    expect(quickResults("col.off.transitions.contre", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
   });
 });

@@ -54,8 +54,8 @@ export const CRITERIA_TREE: CriterionNode = {
       kind: "category",
       results: RES_OBTENU,
       children: [
-        c("reg.faute-commise", "Faute commise (selon la décision de l’arbitre)"),
-        c("reg.faute-subie", "Faute subie (selon la décision de l’arbitre)"),
+        c("reg.faute-commise", "Faute commise (selon la décision de l’arbitre)", { oneClick: true }),
+        c("reg.faute-subie", "Faute subie (selon la décision de l’arbitre)", { oneClick: true }),
         c("reg.hors-jeu", "Hors-jeu signalé"),
         c("reg.carton", "Carton jaune / rouge", { results: ["Jaune", "Rouge", "Autre"] }),
         c("reg.coup-franc", "Coup franc obtenu ou concédé"),
@@ -169,6 +169,7 @@ export const CRITERIA_TREE: CriterionNode = {
           results: RES_REUSSI,
           children: [
             c("tac.ind.appel", "Appel / démarquage", {
+              oneClick: true,
               evaluation: {
                 success:
                   "Le joueur se rend disponible dans la zone prévue ou libère un espace exploitable",
@@ -176,6 +177,7 @@ export const CRITERIA_TREE: CriterionNode = {
               },
             }),
             c("tac.ind.soutien", "Soutien au porteur", {
+              oneClick: true,
               evaluation: {
                 success: "Le joueur propose une solution de passe jouable",
                 fail: "Aucune solution n’est créée selon les consignes",
@@ -189,18 +191,21 @@ export const CRITERIA_TREE: CriterionNode = {
               },
             }),
             c("tac.ind.repli", "Repli défensif", {
+              oneClick: true,
               evaluation: {
                 success: "Le joueur revient dans la zone prévue avant la progression adverse",
                 fail: "Il ne se replace pas selon la consigne",
               },
             }),
             c("tac.ind.couverture", "Couverture d’un partenaire", {
+              oneClick: true,
               evaluation: {
                 success:
                   "Le joueur protège l’espace laissé libre ou peut intervenir en cas de débordement",
               },
             }),
             c("tac.ind.placement", "Placement dans le bloc", {
+              oneClick: true,
               results: RES_CONFORME,
               evaluation: {
                 success: "Conforme à la consigne tactique du staff",
@@ -268,6 +273,7 @@ export const CRITERIA_TREE: CriterionNode = {
               id: "col.trans",
               label: "C. Transitions défensives",
               kind: "section",
+              oneClick: true,
               children: [
                 c("col.trans.repli", "Repli collectif"),
                 c("col.trans.contre-pressing", "Contre-pressing"),
@@ -278,7 +284,7 @@ export const CRITERIA_TREE: CriterionNode = {
               id: "col.buts",
               label: "D. Buts concédés",
               kind: "section",
-              results: ["Concédé", "Autre"],
+              oneClick: true,
               children: [
                 c("col.buts.perte", "Perte de balle à l’origine"),
                 c("col.buts.espace", "Espace exploité"),

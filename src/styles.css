@@ -550,3 +550,15 @@
 .quick-result[data-tone="neutral"]:hover {
   background: var(--accent);
 }
+
+/* Sous-critère étalé en tuile (Progression, Création d'occasions, Transitions offensives) */
+.quick-sub {
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in oklab, var(--branch) 35%, var(--border));
+  background: color-mix(in oklab, var(--branch) 7%, transparent);
+}
+.quick-sub .quick-result {
+  padding: 0.3rem 0.4rem;
+  font-size: 0.75rem;
+  text-align: center;
+}
