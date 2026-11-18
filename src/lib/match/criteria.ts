@@ -243,7 +243,7 @@ export const CRITERIA_TREE: CriterionNode = {
                   s("col.off.occasions.combine", "Jeu combiné"),
                   s("col.off.occasions.recup", "Tir après récupération"),
                 ]),
-                c("col.off.transitions", "Transitions offensives", {}, [
+                c("col.off.transitions", "Transitions offensives", { oneClick: true }, [
                   s("col.off.transitions.contre", "Contre-attaque"),
                   s("col.off.transitions.conservation", "Conservation après récupération"),
                   s("col.off.transitions.perte", "Perte rapide du ballon"),

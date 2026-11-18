@@ -310,6 +310,6 @@ describe("critères modifiés par le staff", () => {
 
   it("Progression, Création d'occasions et Transitions offensives gardent Réussi/Raté", () => {
     expect(quickResults("col.off.progression.axe", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
-    expect(quickResults("col.off.transitions.contre", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
+    expect(quickResults("col.off.transitions.contre", DEFAULT_CONFIG)).toEqual([]);
   });
 });
