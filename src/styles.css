@@ -558,7 +558,7 @@
   background: color-mix(in oklab, var(--branch) 7%, transparent);
 }
 .quick-sub .quick-result {
-  padding: 0.3rem 0.4rem;
+  padding: 0.15rem 0.4rem;
   font-size: 0.75rem;
   text-align: center;
 }

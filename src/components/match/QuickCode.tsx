@@ -93,7 +93,7 @@ function bySection(cards: QuickCard[]) {
   return groups;
 }
 
-const GRID = "grid grid-flow-row-dense auto-rows-[2.375rem] gap-1.5";
+const GRID = "grid grid-flow-row-dense auto-rows-[2rem] gap-1";
 
 /** Critères collectifs dont les sous-critères s'étalent sur toute la largeur. */
 const WIDE = new Set(["col.off.progression", "col.off.occasions", "col.off.transitions"]);
@@ -224,7 +224,7 @@ export function QuickCode(p: Props) {
     const label = shortcutLabel(id, p.config);
     return (
       <div key={id} data-cat={catAttr(id)} className="quick-card rounded-md border bg-background/40">
-        <div className="flex items-center gap-1.5 bg-muted/40 px-2 py-1">
+        <div className="flex items-center gap-1.5 bg-muted/40 px-2 py-0.5">
           <span className="size-2 shrink-0 rounded-full bg-branch" />
           <span className="min-w-0 flex-1 truncate text-xs font-bold uppercase tracking-wide">
             {label}
@@ -234,14 +234,14 @@ export function QuickCode(p: Props) {
           </span>
         </div>
         <div
-          className="grid gap-1.5 p-1.5"
+          className="grid gap-1 p-1"
           style={{ gridTemplateColumns: "repeat(auto-fit, minmax(9.5rem, 1fr))" }}
         >
           {subs.map((sid) => {
             const sub = nodeLabel(getNode(sid)!, p.config);
             const head = (
               <span className="flex w-full items-start gap-1">
-                <span className="line-clamp-2 min-w-0 flex-1 text-xs font-semibold leading-tight">
+                <span className="min-w-0 flex-1 truncate text-xs font-semibold leading-tight">
                   {sub}
                 </span>
                 <span className="font-mono text-[0.7rem] text-muted-foreground">
@@ -254,7 +254,7 @@ export function QuickCode(p: Props) {
                 <button
                   key={sid}
                   type="button"
-                  className="quick-sub quick-tap flex flex-col p-1.5 text-left"
+                  className="quick-sub quick-tap flex flex-col px-1.5 py-1 text-left"
                   onClick={() => p.onCode(sid, "")}
                   title={`Enregistrer : ${label} · ${sub}`}
                 >
@@ -262,7 +262,7 @@ export function QuickCode(p: Props) {
                 </button>
               );
             return (
-              <div key={sid} className="quick-sub flex flex-col gap-1 p-1.5">
+              <div key={sid} className="quick-sub flex flex-col gap-0.5 px-1.5 py-1">
                 {head}
                 <div className="grid grid-cols-2 gap-1">
                   {resultButtons(sid, `${label} · ${sub}`)}
@@ -391,8 +391,9 @@ export function QuickCode(p: Props) {
           </Button>
         </div>
       ) : p.mode === "collectif" ? (
-        <div className="flex flex-wrap gap-3 p-2">
-          {bySection(cards).map((g) => {
+        <div className="flex flex-wrap gap-x-3 gap-y-2 p-2">
+          {(() => {
+            const renderGroup = (g: ReturnType<typeof bySection>[number], stacked = false) => {
             const wide = g.cards.filter((c) => WIDE.has(c.id) && c.subs.length > 0);
             const narrow = g.cards.filter((c) => !wide.includes(c));
             const n = Math.min(g.cards.length, 4);
@@ -400,7 +401,7 @@ export function QuickCode(p: Props) {
               <div
                 key={g.id}
                 className="min-w-0"
-                style={{ flex: wide.length ? "1 1 100%" : `${n} 1 ${n * 14}rem` }}
+                style={stacked ? undefined : { flex: wide.length ? "1 1 100%" : `${n} 1 ${n * 14}rem` }}
               >
                 <p className="mb-1 font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
                   {g.label}
@@ -409,7 +410,7 @@ export function QuickCode(p: Props) {
                   // Colonne de gauche empilée (ex. Sortie de balle puis Perte de balle à la relance).
                   <div className="grid items-start gap-1.5 md:grid-cols-[minmax(13.5rem,16rem)_1fr]">
                     <div className={GRID}>{narrow.map(renderCard)}</div>
-                    <div className="flex flex-col gap-1.5">{wide.map(renderWide)}</div>
+                    <div className="flex flex-col gap-1">{wide.map(renderWide)}</div>
                   </div>
                 ) : (
                   <div
@@ -421,7 +422,27 @@ export function QuickCode(p: Props) {
                 )}
               </div>
             );
-          })}
+};
+            const groups = bySection(cards);
+            const full = groups.filter((g) => g.cards.some((c) => WIDE.has(c.id) && c.subs.length));
+            const rest = groups.filter((g) => !full.includes(g));
+            return (
+              <>
+                {full.map((g) => renderGroup(g))}
+                {rest.length > 1 ? (
+                  <>
+                    {renderGroup(rest[0]!)}
+                    {/* Parties suivantes empilées (C puis D juste en dessous). */}
+                    <div className="flex min-w-0 flex-col gap-2" style={{ flex: "3 1 36rem" }}>
+                      {rest.slice(1).map((g) => renderGroup(g, true))}
+                    </div>
+                  </>
+                ) : (
+                  rest.map((g) => renderGroup(g))
+                )}
+              </>
+            );
+          })()}
         </div>
       ) : (
         <div className={`${GRID} p-2 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5`}>
