@@ -157,12 +157,12 @@ describe("codage rapide", () => {
 });
 
 describe("critères modifiés par le staff", () => {
-  it("Technique a un Duel Aérien / Au sol, Réussi ou Raté, et plus de Jeu de tête", () => {
+  it("Technique a un Duel Aérien / Au sol, Gagné ou Perdu, et plus de Jeu de tête", () => {
     expect(CRITERIA_INDEX.get("tec.duel")?.node.children?.map((c) => c.label)).toEqual([
       "Aérien",
       "Au sol",
     ]);
-    expect(quickResults("tec.duel.sol", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
+    expect(quickResults("tec.duel.sol", DEFAULT_CONFIG)).toEqual(["Gagné", "Perdu"]);
     expect(CRITERIA_INDEX.has("tec.tete")).toBe(false);
   });
 
@@ -311,5 +311,21 @@ describe("critères modifiés par le staff", () => {
   it("Progression, Création d'occasions et Transitions offensives gardent Réussi/Raté", () => {
     expect(quickResults("col.off.progression.axe", DEFAULT_CONFIG)).toEqual(["Réussi", "Raté"]);
     expect(quickResults("col.off.transitions.contre", DEFAULT_CONFIG)).toEqual([]);
+  });
+
+  it("Touche : un seul clic, sans résultat", () => {
+    expect(CRITERIA_INDEX.get("tec.touche")?.categoryId).toBe("technique");
+    expect(quickResults("tec.touche", DEFAULT_CONFIG)).toEqual([]);
+  });
+
+  it("Duel aérien et au sol : Gagné / Perdu", () => {
+    expect(quickResults("tec.duel.aerien", DEFAULT_CONFIG)).toEqual(["Gagné", "Perdu"]);
+    expect(quickResults("tec.duel.sol", DEFAULT_CONFIG)).toEqual(["Gagné", "Perdu"]);
+  });
+
+  it("les boutons individuels existants reçoivent Touche et Duel", () => {
+    const stored = { ...DEFAULT_CONFIG, shortcuts: ["tec.passe"], shortcutsVersion: 4 };
+    const cards = quickCards(upgradeConfig(stored).shortcuts, "individuel").map((c) => c.id);
+    expect(cards).toEqual(expect.arrayContaining(["tec.duel", "tec.touche"]));
   });
 });

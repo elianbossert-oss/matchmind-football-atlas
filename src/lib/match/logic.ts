@@ -79,8 +79,11 @@ const SHORTCUTS_V2 = [
     .filter((e) => e.scope === "collectif" && e.node.kind === "criterion")
     .map((e) => e.node.id),
 ];
-export const SHORTCUTS_VERSION = 4;
-DEFAULT_CONFIG.shortcuts = [...new Set([...SHORTCUTS_V1, ...SHORTCUTS_V2])];
+/** v5 : Touche (un clic) et Duel aérien / au sol (Gagné / Perdu) dans les boutons individuels. */
+const SHORTCUTS_V5 = ["tec.duel", "tec.touche"];
+// v6 : Touche rangée dans Technique (elle était brièvement sous Règlement).
+export const SHORTCUTS_VERSION = 6;
+DEFAULT_CONFIG.shortcuts = [...new Set([...SHORTCUTS_V1, ...SHORTCUTS_V2, ...SHORTCUTS_V5])];
 // Pas de version dans les valeurs par défaut : elles sont fusionnées avec les réglages enregistrés.
 
 /** Boutons par défaut d'un mode (individuel ou collectif). */
@@ -103,9 +106,10 @@ export function upgradeConfig(config: StaffConfig): StaffConfig {
   const restore = v < 3 && noIndividual ? defaultShortcuts("individuel") : [];
   // v4 : tous les blocs des 4 sous-parties du collectif (dont D. Buts concédés).
   const collectif = v < 4 ? defaultShortcuts("collectif") : [];
+  const v5 = v < 6 ? SHORTCUTS_V5 : [];
   return {
     ...config,
-    shortcuts: [...new Set([...restore, ...valid, ...add, ...collectif])],
+    shortcuts: [...new Set([...restore, ...valid, ...add, ...collectif, ...v5])],
     shortcutsVersion: SHORTCUTS_VERSION,
   };
 }
@@ -116,6 +120,7 @@ const RENAMED_NODES: Record<string, string> = {
   "reg.faute-commise.poussette": "reg.faute-commise",
   "reg.faute-commise.dangereux": "reg.faute-commise",
   "tec.tete": "tec.duel.aerien",
+  "reg.touche": "tec.touche",
 };
 
 /** Critères supprimés par le staff (avec leurs sous-critères). */
@@ -309,7 +314,7 @@ export type ResultTone = "positive" | "negative" | "warning" | "neutral";
 export function resultTone(result: string): ResultTone {
   const r = normalize(result);
   if (r === "jaune") return "warning";
-  if (["reussi", "reussie", "conforme", "obtenu"].includes(r)) return "positive";
-  if (["rate", "ratee", "non conforme", "concede", "rouge"].includes(r)) return "negative";
+  if (["reussi", "reussie", "conforme", "obtenu", "gagne"].includes(r)) return "positive";
+  if (["rate", "ratee", "non conforme", "concede", "rouge", "perdu"].includes(r)) return "negative";
   return "neutral";
 }
