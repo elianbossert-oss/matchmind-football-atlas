@@ -22,8 +22,11 @@ import {
   nodeLabel,
   normalize,
   formatTimecode,
+  isSpaceBlocked,
+  isTypingTarget,
   playbackStart,
   seekBy,
+  togglePlayback,
   scopeOf,
   type CodedAction,
   type Period,
@@ -202,22 +205,26 @@ function AnalysePage() {
 
   const currentTime = () => videoRef.current?.currentTime ?? null;
 
-  // Les flèches gauche / droite font avancer ou reculer la vidéo de 5 secondes.
+  // Flèches = saut de 5 s ; barre d'espace = lecture / pause.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const arrow = e.key === "ArrowRight" || e.key === "ArrowLeft";
+      const space = e.key === " " || e.code === "Space";
+      if (!arrow && !space) return;
       const video = videoRef.current;
       if (!video || !source?.url) return;
-      const target = e.target as HTMLElement | null;
-      if (
-        target &&
-        (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))
-      )
-        return;
       if (formOpen || settingsOpen) return;
+      const target = e.target as HTMLElement | null;
+      if (arrow ? isTypingTarget(target) : isSpaceBlocked(target)) return;
       e.preventDefault();
-      const delta = e.key === "ArrowRight" ? SEEK_STEP : -SEEK_STEP;
-      video.currentTime = seekBy(video.currentTime, delta, video.duration);
+      if (arrow) {
+        const delta = e.key === "ArrowRight" ? SEEK_STEP : -SEEK_STEP;
+        video.currentTime = seekBy(video.currentTime, delta, video.duration);
+      } else if (togglePlayback(video.paused) === "pause") {
+        video.pause();
+      } else {
+        void video.play().catch(() => undefined);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

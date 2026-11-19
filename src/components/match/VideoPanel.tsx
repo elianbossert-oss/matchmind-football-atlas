@@ -117,6 +117,10 @@ export function VideoPanel({ videoRef, source, onSource, preRoll }: Props) {
               <kbd className="rounded border bg-muted px-1 font-mono text-[0.65rem]">→</kbd>
               : 5 s par 5 s
             </span>
+            <span className="ml-2 hidden items-center gap-1 sm:inline-flex">
+              <kbd className="rounded border bg-muted px-1 font-mono text-[0.65rem]">Espace</kbd>
+              : lecture / pause
+            </span>
           </p>
           {pick}
         </div>

@@ -297,6 +297,27 @@ export function seekBy(currentTime: number, delta: number, duration: number): nu
   return Math.min(to, duration);
 }
 
+/** Zones de frappe : les flèches et l'espace y gardent leur rôle normal. */
+export function isTypingTarget(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null;
+  if (!el || typeof el.tagName !== "string") return false;
+  if (el.isContentEditable) return true;
+  return ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName);
+}
+
+/** Cibles où l'espace garde son rôle : zones de frappe et lecteur natif (qui gère déjà la pause). */
+export function isSpaceBlocked(target: EventTarget | null): boolean {
+  if (isTypingTarget(target)) return true;
+  const el = target as HTMLElement | null;
+  if (!el || typeof el.tagName !== "string") return false;
+  return ["VIDEO", "SUMMARY"].includes(el.tagName);
+}
+
+/** Ce que la barre d'espace doit faire : relire si c'est en pause, mettre en pause sinon. */
+export function togglePlayback(paused: boolean): "play" | "pause" {
+  return paused ? "play" : "pause";
+}
+
 export function formatTimecode(totalSeconds: number): string {
   const t = Math.max(0, Math.floor(totalSeconds));
   const h = Math.floor(t / 3600);

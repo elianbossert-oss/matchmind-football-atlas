@@ -16,6 +16,9 @@ import {
   quickResults,
   playbackStart,
   seekBy,
+  isSpaceBlocked,
+  isTypingTarget,
+  togglePlayback,
   scopeOf,
   type CodedAction,
 } from "./logic";
@@ -79,6 +82,24 @@ describe("lecture vidéo", () => {
     expect(seekBy(2, -5, 100)).toBe(0);
     expect(seekBy(98, 5, 100)).toBe(100);
     expect(seekBy(30, 5, Number.NaN)).toBe(35);
+  });
+  it("la barre d'espace relit si c'est en pause, met en pause sinon", () => {
+    expect(togglePlayback(true)).toBe("play");
+    expect(togglePlayback(false)).toBe("pause");
+  });
+  it("les flèches sont ignorées pendant la frappe", () => {
+    expect(isTypingTarget(document.createElement("input"))).toBe(true);
+    expect(isTypingTarget(document.createElement("textarea"))).toBe(true);
+    expect(isTypingTarget(document.createElement("div"))).toBe(false);
+    expect(isTypingTarget(null)).toBe(false);
+  });
+  it("l'espace ne détourne ni la frappe ni le lecteur natif, mais agit sur un bouton", () => {
+    expect(isSpaceBlocked(document.createElement("input"))).toBe(true);
+    expect(isSpaceBlocked(document.createElement("video"))).toBe(true);
+    expect(isSpaceBlocked(document.createElement("button"))).toBe(false);
+    expect(isSpaceBlocked(document.createElement("a"))).toBe(false);
+    expect(isSpaceBlocked(document.createElement("div"))).toBe(false);
+    expect(isSpaceBlocked(null)).toBe(false);
   });
   it("comprend les timecodes saisis à la main", () => {
     expect(parseTimecode("1:15")).toBe(75);
