@@ -82,8 +82,10 @@ const SHORTCUTS_V2 = [
 /** v5 : Touche (un clic) et Duel aérien / au sol (Gagné / Perdu) dans les boutons individuels. */
 const SHORTCUTS_V5 = ["tec.duel", "tec.touche"];
 // v6 : Touche rangée dans Technique (elle était brièvement sous Règlement).
-export const SHORTCUTS_VERSION = 6;
-DEFAULT_CONFIG.shortcuts = [...new Set([...SHORTCUTS_V1, ...SHORTCUTS_V2, ...SHORTCUTS_V5])];
+/** v7 : Corner (Obtenu / Concédé). */
+const SHORTCUTS_V7 = ["reg.corner"];
+export const SHORTCUTS_VERSION = 7;
+DEFAULT_CONFIG.shortcuts = [...new Set([...SHORTCUTS_V1, ...SHORTCUTS_V2, ...SHORTCUTS_V5, ...SHORTCUTS_V7])];
 // Pas de version dans les valeurs par défaut : elles sont fusionnées avec les réglages enregistrés.
 
 /** Boutons par défaut d'un mode (individuel ou collectif). */
@@ -107,9 +109,10 @@ export function upgradeConfig(config: StaffConfig): StaffConfig {
   // v4 : tous les blocs des 4 sous-parties du collectif (dont D. Buts concédés).
   const collectif = v < 4 ? defaultShortcuts("collectif") : [];
   const v5 = v < 6 ? SHORTCUTS_V5 : [];
+  const v7 = v < 7 ? SHORTCUTS_V7 : [];
   return {
     ...config,
-    shortcuts: [...new Set([...restore, ...valid, ...add, ...collectif, ...v5])],
+    shortcuts: [...new Set([...restore, ...valid, ...add, ...collectif, ...v5, ...v7])],
     shortcutsVersion: SHORTCUTS_VERSION,
   };
 }

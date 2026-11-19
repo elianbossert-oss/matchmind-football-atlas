@@ -328,4 +328,10 @@ describe("critères modifiés par le staff", () => {
     const cards = quickCards(upgradeConfig(stored).shortcuts, "individuel").map((c) => c.id);
     expect(cards).toEqual(expect.arrayContaining(["tec.duel", "tec.touche"]));
   });
+
+  it("Corner : Obtenu / Concédé, ajouté aux boutons existants", () => {
+    expect(quickResults("reg.corner", DEFAULT_CONFIG)).toEqual(["Obtenu", "Concédé"]);
+    const stored = { ...DEFAULT_CONFIG, shortcuts: ["tec.passe"], shortcutsVersion: 6 };
+    expect(upgradeConfig(stored).shortcuts).toContain("reg.corner");
+  });
 });

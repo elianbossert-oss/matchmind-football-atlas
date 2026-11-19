@@ -59,6 +59,7 @@ export const CRITERIA_TREE: CriterionNode = {
         c("reg.hors-jeu", "Hors-jeu signalé"),
         c("reg.carton", "Carton jaune / rouge", { results: ["Jaune", "Rouge", "Autre"] }),
         c("reg.coup-franc", "Coup franc obtenu ou concédé"),
+        c("reg.corner", "Corner"),
         c("reg.penalty", "Penalty obtenu ou concédé"),
       ],
     },

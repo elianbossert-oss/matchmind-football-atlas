@@ -14,3 +14,4 @@
 - [x] Un seul clic pour Perte de balle à la relance, Bloc équipe, Pressing collectif ; Circuits de passes supprimé
 - [x] Parties C/D et points individuels en bouton unique ; partie A : Perte sous Sortie, sous-points étalés en tuiles
 - [x] Bouton Touche (un clic) ; Duel aérien / au sol Gagné / Perdu dans les boutons individuels
+- [x] Bouton Corner (Obtenu / Concédé)
