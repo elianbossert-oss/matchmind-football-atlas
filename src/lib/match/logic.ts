@@ -83,8 +83,9 @@ const SHORTCUTS_V2 = [
 const SHORTCUTS_V5 = ["tec.duel", "tec.touche"];
 // v6 : Touche rangée dans Technique (elle était brièvement sous Règlement).
 /** v7 : Corner (Obtenu / Concédé). */
-const SHORTCUTS_V7 = ["reg.corner"];
-export const SHORTCUTS_VERSION = 7;
+const SHORTCUTS_V7 = ["tec.corner"];
+// v8 : Corner rangé dans Technique.
+export const SHORTCUTS_VERSION = 8;
 DEFAULT_CONFIG.shortcuts = [...new Set([...SHORTCUTS_V1, ...SHORTCUTS_V2, ...SHORTCUTS_V5, ...SHORTCUTS_V7])];
 // Pas de version dans les valeurs par défaut : elles sont fusionnées avec les réglages enregistrés.
 
@@ -109,7 +110,7 @@ export function upgradeConfig(config: StaffConfig): StaffConfig {
   // v4 : tous les blocs des 4 sous-parties du collectif (dont D. Buts concédés).
   const collectif = v < 4 ? defaultShortcuts("collectif") : [];
   const v5 = v < 6 ? SHORTCUTS_V5 : [];
-  const v7 = v < 7 ? SHORTCUTS_V7 : [];
+  const v7 = v < 8 ? SHORTCUTS_V7 : [];
   return {
     ...config,
     shortcuts: [...new Set([...restore, ...valid, ...add, ...collectif, ...v5, ...v7])],
@@ -124,6 +125,7 @@ const RENAMED_NODES: Record<string, string> = {
   "reg.faute-commise.dangereux": "reg.faute-commise",
   "tec.tete": "tec.duel.aerien",
   "reg.touche": "tec.touche",
+  "reg.corner": "tec.corner",
 };
 
 /** Critères supprimés par le staff (avec leurs sous-critères). */

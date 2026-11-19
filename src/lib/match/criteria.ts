@@ -59,7 +59,6 @@ export const CRITERIA_TREE: CriterionNode = {
         c("reg.hors-jeu", "Hors-jeu signalé"),
         c("reg.carton", "Carton jaune / rouge", { results: ["Jaune", "Rouge", "Autre"] }),
         c("reg.coup-franc", "Coup franc obtenu ou concédé"),
-        c("reg.corner", "Corner"),
         c("reg.penalty", "Penalty obtenu ou concédé"),
       ],
     },
@@ -134,6 +133,7 @@ export const CRITERIA_TREE: CriterionNode = {
             fail: "Il est intercepté, sort du terrain ou n’atteint pas la zone",
           },
         }),
+        c("tec.corner", "Corner", { results: RES_OBTENU }),
         c("tec.touche", "Touche", { oneClick: true }),
         c("tec.duel", "Duel", { results: ["Gagné", "Perdu", "Autre"] }, [s("tec.duel.aerien", "Aérien"), s("tec.duel.sol", "Au sol")]),
         c("tec.interception", "Interception", {

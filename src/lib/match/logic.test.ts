@@ -330,8 +330,8 @@ describe("critères modifiés par le staff", () => {
   });
 
   it("Corner : Obtenu / Concédé, ajouté aux boutons existants", () => {
-    expect(quickResults("reg.corner", DEFAULT_CONFIG)).toEqual(["Obtenu", "Concédé"]);
+    expect(quickResults("tec.corner", DEFAULT_CONFIG)).toEqual(["Obtenu", "Concédé"]);
     const stored = { ...DEFAULT_CONFIG, shortcuts: ["tec.passe"], shortcutsVersion: 6 };
-    expect(upgradeConfig(stored).shortcuts).toContain("reg.corner");
+    expect(upgradeConfig(stored).shortcuts).toContain("tec.corner");
   });
 });
