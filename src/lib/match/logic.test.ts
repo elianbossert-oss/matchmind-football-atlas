@@ -15,6 +15,7 @@ import {
   quickCards,
   quickResults,
   playbackStart,
+  seekBy,
   scopeOf,
   type CodedAction,
 } from "./logic";
@@ -69,6 +70,15 @@ describe("lecture vidéo", () => {
   });
   it("ne démarre jamais avant le début de la vidéo", () => {
     expect(playbackStart(3, 5)).toBe(0);
+  });
+  it("avance de 5 s par 5 s avec les flèches", () => {
+    expect(seekBy(10, 5, 100)).toBe(15);
+    expect(seekBy(15, -5, 100)).toBe(10);
+  });
+  it("ne sort jamais de la vidéo quand on saute", () => {
+    expect(seekBy(2, -5, 100)).toBe(0);
+    expect(seekBy(98, 5, 100)).toBe(100);
+    expect(seekBy(30, 5, Number.NaN)).toBe(35);
   });
   it("comprend les timecodes saisis à la main", () => {
     expect(parseTimecode("1:15")).toBe(75);

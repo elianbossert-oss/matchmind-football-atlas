@@ -112,6 +112,11 @@ export function VideoPanel({ videoRef, source, onSource, preRoll }: Props) {
             <span className="ml-2 inline-flex items-center gap-1">
               <RotateCcw className="size-3" /> lecture {preRoll} s avant l’action
             </span>
+            <span className="ml-2 hidden items-center gap-1 sm:inline-flex">
+              <kbd className="rounded border bg-muted px-1 font-mono text-[0.65rem]">←</kbd>
+              <kbd className="rounded border bg-muted px-1 font-mono text-[0.65rem]">→</kbd>
+              : 5 s par 5 s
+            </span>
           </p>
           {pick}
         </div>

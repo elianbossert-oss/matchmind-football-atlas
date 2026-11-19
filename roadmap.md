@@ -15,3 +15,4 @@
 - [x] Parties C/D et points individuels en bouton unique ; partie A : Perte sous Sortie, sous-points étalés en tuiles
 - [x] Bouton Touche (un clic) ; Duel aérien / au sol Gagné / Perdu dans les boutons individuels
 - [x] Bouton Corner (Obtenu / Concédé)
+- [x] Flèches ← → du clavier : la vidéo avance ou recule de 5 s par 5 s

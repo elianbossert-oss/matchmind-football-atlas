@@ -289,6 +289,14 @@ export function playbackStart(videoTime: number, preRoll: number): number {
   return Math.max(0, videoTime - Math.max(0, preRoll));
 }
 
+/** Nouvelle position après un saut de ±N secondes : jamais avant 0, jamais après la fin. */
+export function seekBy(currentTime: number, delta: number, duration: number): number {
+  const from = Number.isFinite(currentTime) ? Math.max(0, currentTime) : 0;
+  const to = Math.max(0, from + delta);
+  if (!Number.isFinite(duration) || duration <= 0) return to;
+  return Math.min(to, duration);
+}
+
 export function formatTimecode(totalSeconds: number): string {
   const t = Math.max(0, Math.floor(totalSeconds));
   const h = Math.floor(t / 3600);

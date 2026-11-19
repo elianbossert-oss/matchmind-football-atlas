@@ -23,6 +23,7 @@ import {
   normalize,
   formatTimecode,
   playbackStart,
+  seekBy,
   scopeOf,
   type CodedAction,
   type Period,
@@ -53,6 +54,9 @@ export const Route = createFileRoute("/")({
 });
 
 const KEY = "analyse-match:v1";
+
+/** Secondes sautées par les flèches gauche / droite. */
+const SEEK_STEP = 5;
 
 function AnalysePage() {
   const [actions, setActions, actionsLoaded] = usePersisted<CodedAction[]>(`${KEY}:actions`, []);
@@ -197,6 +201,27 @@ function AnalysePage() {
   };
 
   const currentTime = () => videoRef.current?.currentTime ?? null;
+
+  // Les flèches gauche / droite font avancer ou reculer la vidéo de 5 secondes.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const video = videoRef.current;
+      if (!video || !source?.url) return;
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))
+      )
+        return;
+      if (formOpen || settingsOpen) return;
+      e.preventDefault();
+      const delta = e.key === "ArrowRight" ? SEEK_STEP : -SEEK_STEP;
+      video.currentTime = seekBy(video.currentTime, delta, video.duration);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [source?.url, formOpen, settingsOpen]);
 
   const openNew = () => {
     const video = videoRef.current;
